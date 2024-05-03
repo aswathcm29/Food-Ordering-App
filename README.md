@@ -1,6 +1,3 @@
-Creating an attractive README for your GitHub project is crucial for engaging potential users and contributors. Below is a template you can use for your Food Ordering App project based on Flutter and Firebase:
-
-```markdown
 # Food Ordering App
 
 [![Flutter](https://img.shields.io/badge/Flutter-v2.10.0-blue.svg?logo=flutter)](https://flutter.dev/)
@@ -23,7 +20,10 @@ A delightful Food Ordering App built with Flutter and Firebase, designed to simp
 
 ## Screenshots
 
-[Insert Screenshots Here]
+![image](https://github.com/Usman1361/Food-Ordering-App/assets/112246337/0f35fedf-609a-46db-8c4d-fd5ee64d442f)
+![image](https://github.com/Usman1361/Food-Ordering-App/assets/112246337/7c8ebd9f-f1c6-44cf-a296-020aa512f754)
+![image](https://github.com/Usman1361/Food-Ordering-App/assets/112246337/6e1ecd7d-813d-4e77-93ed-8ec2d7f9b029)
+
 
 ---
 
@@ -41,7 +41,7 @@ Follow these steps to get the project up and running on your local machine.
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/food-ordering-app.git
+git clone https://github.com/Usman1361/food-ordering-app.git
 ```
 
 2. Navigate to the project directory:
@@ -89,4 +89,3 @@ This project is licensed under the [MIT License](LICENSE).
 - [FlutterFire](https://firebase.flutter.dev/)
 ```
 
-Replace the placeholders like `[Insert Screenshots Here]`, `[your-username]`, and `[LICENSE]` with the appropriate content. You can also add more sections or customize it further based on your project's specific features and requirements. Adding actual screenshots of your app in the Screenshots section would greatly enhance its visual appeal.
