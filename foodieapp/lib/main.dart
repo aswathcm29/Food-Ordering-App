@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(), 
+      home: SplashScreen(),
     );
   }
 }
@@ -19,15 +19,19 @@ class MyApp extends StatelessWidget {
 class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // Set the time dilation for the animation
+    timeDilation = 3.0;
+
+    // Delay before navigating to MyHomePage
     Future.delayed(Duration(milliseconds: 2000), () {
+      // Reset the time dilation back to normal
       timeDilation = 1.0;
+      // Navigate to MyHomePage
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => MyHomePage()),
       );
     });
-
-    timeDilation = 6.0;
 
     return Scaffold(
       body: Container(
@@ -56,6 +60,16 @@ class SplashScreen extends StatelessWidget {
                   height: 1,
                   color: Colors.white,
                 ),
+              ),
+            ),
+            Positioned(
+              width: 350,
+              height: 355.13,
+              top: 111,
+              left: 149,
+              child: Image.asset(
+                'assets/images/cheeseburger.png',
+                fit: BoxFit.cover,
               ),
             ),
             Positioned(
