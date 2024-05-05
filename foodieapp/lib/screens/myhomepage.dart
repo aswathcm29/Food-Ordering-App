@@ -43,6 +43,28 @@ class SplashScreen extends StatelessWidget {
       'subTitle': "Veggie's Burger",
       'rating': 4.9,
     },
+     {
+      'imagePath': 'assets/images/pizza1.png',
+      'title': 'Cheese Pizza',
+      'subTitle': "Cheese's Pizza",
+      'rating': 3.9,
+    },
+     {
+      'imagePath': 'assets/images/pizza2.png',
+      'title': 'Chiken Pizza',
+      'subTitle': "Chicken's Burger",
+      'rating': 4.9,
+    }, {
+      'imagePath': 'assets/images/pizza3.png',
+      'title': 'Vegetable Pizza',
+      'subTitle': "Veggie's Pizza",
+      'rating': 4.9,
+    }, {
+      'imagePath': 'assets/images/pizza4.png',
+      'title': 'Fajita Pizza',
+      'subTitle': "Cheese Fajita's Pizza",
+      'rating': 4.9,
+    },
     // Add more data as needed
   ];
 
@@ -195,6 +217,48 @@ class SplashScreen extends StatelessWidget {
             title: cardData[3]['title'],
             subTitle: cardData[3]['subTitle'],
             rating: cardData[3]['rating'],
+          ),
+        ],
+      ),
+
+      SizedBox(height: 14),
+
+      Row(
+        children: [
+          SizedBox(width: 4),
+          CardWidget(
+            imagePath: cardData[4]['imagePath'],
+            title: cardData[4]['title'],
+            subTitle: cardData[4]['subTitle'],
+            rating: cardData[4]['rating'],
+          ),
+          SizedBox(width: 4),
+          CardWidget(
+            imagePath: cardData[5]['imagePath'],
+            title: cardData[5]['title'],
+            subTitle: cardData[5]['subTitle'],
+            rating: cardData[5]['rating'],
+          ),
+        ],
+      ),
+
+      SizedBox(height: 14),
+
+      Row(
+        children: [
+          SizedBox(width: 4),
+          CardWidget(
+            imagePath: cardData[6]['imagePath'],
+            title: cardData[6]['title'],
+            subTitle: cardData[6]['subTitle'],
+            rating: cardData[6]['rating'],
+          ),
+          SizedBox(width: 4),
+          CardWidget(
+            imagePath: cardData[6]['imagePath'],
+            title: cardData[6]['title'],
+            subTitle: cardData[6]['subTitle'],
+            rating: cardData[6]['rating'],
           ),
         ],
       ),
