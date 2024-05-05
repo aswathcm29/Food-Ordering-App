@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart' show timeDilation;
+import 'package:foodieapp/screens/myhomepage.dart';
 
 void main() {
   runApp(MyApp());
@@ -9,7 +11,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+      home: SplashScreen(), 
     );
   }
 }
@@ -17,6 +19,16 @@ class MyApp extends StatelessWidget {
 class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    Future.delayed(Duration(milliseconds: 2000), () {
+      timeDilation = 1.0;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MyHomePage()),
+      );
+    });
+
+    timeDilation = 6.0;
+
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -47,16 +59,6 @@ class SplashScreen extends StatelessWidget {
               ),
             ),
             Positioned(
-              width: 350,
-              height: 355.13,
-              top: 140,
-              left: 150,
-              child: Image.asset(
-                'assets/images/cheeseburger.png',
-                fit: BoxFit.cover,
-              ),
-            ),
-            Positioned(
               width: 246,
               height: 288,
               top: 530,
@@ -82,4 +84,3 @@ class SplashScreen extends StatelessWidget {
     );
   }
 }
-

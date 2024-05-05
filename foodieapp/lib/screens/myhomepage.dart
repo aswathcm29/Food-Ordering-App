@@ -1,12 +1,12 @@
 
-/*
+
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(MyHomePage());
 }
 
-class MyApp extends StatelessWidget {
+class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -374,4 +374,3 @@ class CardWidget extends StatelessWidget {
   }
 }
 
-*/
