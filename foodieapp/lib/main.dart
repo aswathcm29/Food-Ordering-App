@@ -19,14 +19,10 @@ class MyApp extends StatelessWidget {
 class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // Set the time dilation for the animation
     timeDilation = 3.0;
 
-    // Delay before navigating to MyHomePage
     Future.delayed(Duration(milliseconds: 2000), () {
-      // Reset the time dilation back to normal
       timeDilation = 1.0;
-      // Navigate to MyHomePage
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => MyHomePage()),

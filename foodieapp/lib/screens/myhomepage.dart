@@ -17,6 +17,35 @@ class MyHomePage extends StatelessWidget {
 }
 
 class SplashScreen extends StatelessWidget {
+  // Sample data for demonstration
+  final List<Map<String, dynamic>> cardData = [
+    {
+      'imagePath': 'assets/images/cheeseburger.png',
+      'title': 'Cheeseburger',
+      'subTitle': "Wendy's Burger",
+      'rating': 4.9,
+    },
+    {
+      'imagePath': 'assets/images/hamburger.png',
+      'title': 'Hamburger',
+      'subTitle': "Veggie's Burger",
+      'rating': 4.9,
+    },
+    {
+      'imagePath': 'assets/images/hamburger2.png',
+      'title': 'Hamburger',
+      'subTitle': "Veggie's Burger",
+      'rating': 3.9,
+    },
+    {
+      'imagePath': 'assets/images/hamburger3.png',
+      'title': 'Hamburger',
+      'subTitle': "Veggie's Burger",
+      'rating': 4.9,
+    },
+    // Add more data as needed
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,7 +141,7 @@ class SplashScreen extends StatelessWidget {
                   height: 60,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: Color(0xFFEF2A39),
+                    color: Color(0xFF19C08E),
                   ),
                   child: Icon(
                     Icons.tune_rounded,
@@ -127,47 +156,53 @@ class SplashScreen extends StatelessWidget {
               child: FrameWithButtons(),
             ),
             Positioned(
-              top: 320,
-              left: 19,
-              child: Row(
-                children: [
-                  CardWidget(
-                    imagePath: 'assets/images/cheeseburger.png',
-                    title: 'Cheeseburger',
-                    subTitle: "Wendy's Burger",
-                    rating: 4.9,
-                  ),
-                  SizedBox(width: 14),
-                  CardWidget(
-                    imagePath: 'assets/images/hamburger.png',
-                    title: 'Hamburger',
-                    subTitle: "Veggie's Burger",
-                    rating: 4.9,
-                  ),
-                ],
-              ),
-            ),
-            Positioned(
-              top: 355 + 200,
-              left: 19,
-              child: Row(
-                children: [
-                  CardWidget(
-                    imagePath: 'assets/images/cheeseburger.png',
-                    title: 'Cheeseburger',
-                    subTitle: "Wendy's Burger",
-                    rating: 4.9,
-                  ),
-                  SizedBox(width: 14),
-                  CardWidget(
-                    imagePath: 'assets/images/hamburger.png',
-                    title: 'Hamburger',
-                    subTitle: "Veggie's Burger",
-                    rating: 4.9,
-                  ),
-                ],
-              ),
-            ),
+  top: 320,
+  left: 12,
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(
+        children: [
+          SizedBox(width: 4),
+          CardWidget(
+            imagePath: cardData[0]['imagePath'],
+            title: cardData[0]['title'],
+            subTitle: cardData[0]['subTitle'],
+            rating: cardData[0]['rating'],
+          ),
+          SizedBox(width: 4),
+          CardWidget(
+            imagePath: cardData[1]['imagePath'],
+            title: cardData[1]['title'],
+            subTitle: cardData[1]['subTitle'],
+            rating: cardData[1]['rating'],
+          ),
+        ],
+      ),
+      SizedBox(height: 14),
+      Row(
+        children: [
+          SizedBox(width: 4),
+          CardWidget(
+            imagePath: cardData[2]['imagePath'],
+            title: cardData[2]['title'],
+            subTitle: cardData[2]['subTitle'],
+            rating: cardData[2]['rating'],
+          ),
+          SizedBox(width: 4),
+          CardWidget(
+            imagePath: cardData[3]['imagePath'],
+            title: cardData[3]['title'],
+            subTitle: cardData[3]['subTitle'],
+            rating: cardData[3]['rating'],
+          ),
+        ],
+      ),
+    ],
+  ),
+),
+
+            
           ],
         ),
       ),
@@ -186,7 +221,7 @@ class FrameWithButtons extends StatelessWidget {
         children: [
           CustomButton(
             text: 'All',
-            color: Color(0xFFEF2A39),
+            color: Color(0xFF19C08E),
             textColor: Color(0xFFF5F5F5),
             boxShadow: [
               BoxShadow(
@@ -198,13 +233,13 @@ class FrameWithButtons extends StatelessWidget {
           ),
           SizedBox(width: 14),
           CustomButton(
-            text: 'Combos',
+            text: 'Burger',
             color: Color(0xFFF3F4F6),
             textColor: Color(0xFF6A6A6A),
           ),
           SizedBox(width: 14),
           CustomButton(
-            text: 'Sliders',
+            text: 'Pizza',
             color: Color(0xFFF3F4F6),
             textColor: Color(0xFF6A6A6A),
           ),
@@ -319,8 +354,8 @@ class CardWidget extends StatelessWidget {
                   ),
                 ),
                 SizedBox(
-                    height:
-                        2), // Maintain a small space between title and subtitle
+                  height: 2,
+                ), // Maintain a small space between title and subtitle
                 Text(
                   subTitle,
                   style: TextStyle(
@@ -373,4 +408,3 @@ class CardWidget extends StatelessWidget {
     );
   }
 }
-
