@@ -486,7 +486,8 @@ class ProductInfoPage extends StatelessWidget {
 */
 
 
-'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'package:foodieapp/screens/productsinfo.dart';
 
 void main() {
   runApp(MyApp());
@@ -792,14 +793,17 @@ class CustomButton extends StatelessWidget {
 class CardWidget extends StatelessWidget {
   final String imagePath;
   final String title;
-  final String subTitle;
   final double rating;
+  final String description;
+  final double price;
+
 
   const CardWidget({
-    required this.imagePath,
+   required this.imagePath,
     required this.title,
-    required this.subTitle,
     required this.rating,
+    required this.description,
+    required this.price, required String subTitle,
   });
 
   @override
@@ -812,8 +816,10 @@ class CardWidget extends StatelessWidget {
             builder: (context) => ProductInfoPage(
               imagePath: imagePath,
               title: title,
-              subTitle: subTitle,
               rating: rating,
+              description: description,
+              price: price,
+              subTitle: subTitle,
             ),
           ),
         );

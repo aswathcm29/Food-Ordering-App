@@ -461,7 +461,7 @@ class ProductInfoPage extends StatefulWidget {
     required this.title,
     required this.rating,
     required this.description,
-    required this.price,
+    required this.price, required String subTitle,
   });
 
   @override
