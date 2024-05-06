@@ -80,65 +80,97 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
             ),
           ),
           Positioned(
-            top: 460,
+            top: 440,
+            left: 19,
+            child: Icon(
+              Icons.star,
+              color: Color(0xFFFF9633),
+              size: 16.08,
+            ),
+          ),
+          Positioned(
+            top: 448,
+            left: 68,
+            child: Container(
+              width: 10,
+              height: 0,
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(width: 2.0, color: Color(0xFFA9A9A9)),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 438,
+            left: 40,
+            child: Text(
+              '4.8',
+              style: TextStyle(
+                fontFamily: 'Roboto',
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF808080),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 438,
+            left: 84,
+            child: Text(
+              '14 mins',
+              style: TextStyle(
+                fontFamily: 'Roboto',
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF808080),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 470,
             left: 19,
             child: Container(
-              width: 168,
-              height: 67,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(4),
+              width: 370,
+              child: Text(
+                'Enjoy our delicious Hamburger Veggie Burger, made with a savory blend of fresh vegetables and herbs, topped with crisp lettuce, juicy tomatoes, and tangy pickles, all served on a soft, toasted bun.',
+                style: TextStyle(
+                  fontFamily: 'Roboto',
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  color: Color(0xFF6A6A6A),
                 ),
-                color: Colors.green,
-                boxShadow: [
-                  BoxShadow(
-                    color: Color(0xFF19C08E).withOpacity(0.2),
-                    spreadRadius: 0,
-                    blurRadius: 13,
-                    offset: Offset(0, 1),
-                  ),
-                ],
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 12),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 19),
-                    child: Text(
-                      'Mild',
-                      style: TextStyle(
-                        fontFamily: 'Roboto',
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF1CC019),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 6),
-                  Slider(
-                    value: 0.5,
-                    onChanged: (newValue) {},
-                    min: 0,
-                    max: 1,
-                    activeColor: Color(0xFF19C08E),
-                    inactiveColor: Colors.grey[300],
-                  ),
-                  SizedBox(height: 6),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 19),
-                    child: Text(
-                      'Hot',
-                      style: TextStyle(
-                        fontFamily: 'Roboto',
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF1CC019),
-                      ),
-                    ),
-                  ),
-                ],
+            ),
+          ),
+          Positioned(
+            top: 600,
+            left: 19,
+            child: Container(
+              width: 40,
+              height: 19,
+              child: Text(
+                'Spicy',
+                style: TextStyle(
+                  fontFamily: 'Roboto',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF3C2F2F),
+                ),
               ),
+            ),
+          ),
+          
+          Positioned(
+            top: 610,
+            left: 0,
+            child: Slider(
+              value: 0,
+              onChanged: (newValue) {},
+              min: 0,
+              max: 1,
+              activeColor: Color(0xFF19C08E),
+              inactiveColor: Colors.grey[300],
             ),
           ),
         ],
