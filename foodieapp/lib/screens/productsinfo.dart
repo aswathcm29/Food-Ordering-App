@@ -22,9 +22,7 @@ class ProductInfoPage extends StatefulWidget {
 class _ProductInfoPageState extends State<ProductInfoPage> {
   double _sliderValue = 0.5;
 
-
-
- int count = 1;
+  int count = 1;
 
   void increment() {
     setState(() {
@@ -37,6 +35,7 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
       count--;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -220,7 +219,6 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
               ),
             ),
           ),
-
           Positioned(
             top: 650,
             left: 150,
@@ -238,7 +236,6 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
               ),
             ),
           ),
-
           Positioned(
             top: 600,
             left: 260,
@@ -256,129 +253,163 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
               ),
             ),
           ),
-
           Positioned(
-          top: 625,
-          left: 260,
-          child: Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: Color(0xFF19C08E),
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: [
-                BoxShadow(
-                  color: Color(0xFF99004F).withOpacity(0.5),
-                  offset: Offset(0, 7),
-                  blurRadius: 13,
-                  spreadRadius: 0,
-                ),
-              ],
-            ),
-            child: InkWell(
-              onTap: decrement,
-              child: Center(
-                child: Text(
-                  "-",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w900,
+            top: 625,
+            left: 260,
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: Color(0xFF19C08E),
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0xFF99004F).withOpacity(0.5),
+                    offset: Offset(0, 7),
+                    blurRadius: 13,
+                    spreadRadius: 0,
+                  ),
+                ],
+              ),
+              child: InkWell(
+                onTap: decrement,
+                child: Center(
+                  child: Text(
+                    "-",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
-        Positioned(
-          top: 625,
-          left: 335,
-          child: Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: Color(0xFF19C08E),
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: [
-                BoxShadow(
-                  color: Color(0xFF99004F).withOpacity(0.5),
-                  offset: Offset(0, 7),
-                  blurRadius: 13,
-                  spreadRadius: 0,
-                ),
-              ],
-            ),
-            child: InkWell(
-              onTap: increment,
-              child: Center(
-                child: Text(
-                  "+",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w900,
+          Positioned(
+            top: 625,
+            left: 335,
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: Color(0xFF19C08E),
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0xFF99004F).withOpacity(0.5),
+                    offset: Offset(0, 7),
+                    blurRadius: 13,
+                    spreadRadius: 0,
+                  ),
+                ],
+              ),
+              child: InkWell(
+                onTap: increment,
+                child: Center(
+                  child: Text(
+                    "+",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
-        Positioned(
-          top: 625,
-          left: 297,
-          child: Container(
-            width: 40,
-            height: 40,
-           
-            child: Center(
-              child: Text(
-                "$count",
-                style: TextStyle(
-                  color: Color(0xFF3C2F2F),
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
+          Positioned(
+            top: 625,
+            left: 297,
+            child: Container(
+              width: 40,
+              height: 40,
+              child: Center(
+                child: Text(
+                  "$count",
+                  style: TextStyle(
+                    color: Color(0xFF3C2F2F),
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-
-        Positioned(
-  top: 828,
-  left: 19,
-  child: Container(
-    width: 104,
-    height: 70,
-    decoration: BoxDecoration(
-      color: Color(0xFF19C08E),
-      borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(20),
-        bottomLeft: Radius.circular(20),
-      ),
-      boxShadow: [
-        BoxShadow(
-          color: Color(0xFF000000).withOpacity(0.4),
-          offset: Offset(0, 9),
-          blurRadius: 30,
-          spreadRadius: 0,
-        ),
-      ],
-    ),
-    child: Center(
-      child: Text(
-        '\$9.99',
-        style: TextStyle(
-          fontFamily: 'Roboto',
-          fontSize: 22,
-          fontWeight: FontWeight.w600,
-          color: Colors.white,
-        ),
-      ),
-    ),
-  ),
-),
-
-
+          Positioned(
+            top: 690,
+            left: 19,
+            child: Container(
+              width: 104,
+              height: 60,
+              decoration: BoxDecoration(
+                color: Color(0xFF19C08E),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  bottomLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0xFF000000).withOpacity(0.4),
+                    offset: Offset(0, 9),
+                    blurRadius: 30,
+                    spreadRadius: 0,
+                  ),
+                ],
+              ),
+              child: Center(
+                child: Text(
+                  '\$9.99',
+                  style: TextStyle(
+                    fontFamily: 'Roboto',
+                    fontSize: 22,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 690,
+            left: 172,
+            child: Container(
+              width: 200,
+              height: 60,
+              decoration: BoxDecoration(
+                color: Color(0xFF3C2F2F),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  bottomLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0xFF000000).withOpacity(0.4),
+                    offset: Offset(0, 9),
+                    blurRadius: 30,
+                    spreadRadius: 0,
+                  ),
+                ],
+              ),
+              child: Center(
+                child: Text(
+                  'ORDER NOW',
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: const Color.fromARGB(
+                        255, 238, 204, 204), // Changed color to white
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
