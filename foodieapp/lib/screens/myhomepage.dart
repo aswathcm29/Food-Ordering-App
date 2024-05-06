@@ -14,7 +14,12 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
+  @override
+  _SplashScreenState createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
   // Sample data for demonstration
   final List<Map<String, dynamic>> cardData = [
     {
@@ -41,23 +46,25 @@ class SplashScreen extends StatelessWidget {
       'subTitle': "Veggie's Burger",
       'rating': 4.9,
     },
-     {
+    {
       'imagePath': 'assets/images/pizza1.png',
       'title': 'Cheese Pizza',
       'subTitle': "Cheese's Pizza",
       'rating': 3.9,
     },
-     {
+    {
       'imagePath': 'assets/images/pizza2.png',
-      'title': 'Chiken Pizza',
-      'subTitle': "Chicken's Burger",
+      'title': 'Chicken Pizza',
+      'subTitle': "Chicken's Pizza",
       'rating': 4.9,
-    }, {
+    },
+    {
       'imagePath': 'assets/images/pizza3.png',
       'title': 'Vegetable Pizza',
       'subTitle': "Veggie's Pizza",
       'rating': 4.9,
-    }, {
+    },
+    {
       'imagePath': 'assets/images/pizza4.png',
       'title': 'Fajita Pizza',
       'subTitle': "Cheese Fajita's Pizza",
@@ -176,95 +183,89 @@ class SplashScreen extends StatelessWidget {
               child: FrameWithButtons(),
             ),
             Positioned(
-  top: 320,
-  left: 12,
-  child: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Row(
-        children: [
-          SizedBox(width: 4),
-          CardWidget(
-            imagePath: cardData[0]['imagePath'],
-            title: cardData[0]['title'],
-            subTitle: cardData[0]['subTitle'],
-            rating: cardData[0]['rating'],
-          ),
-          SizedBox(width: 4),
-          CardWidget(
-            imagePath: cardData[1]['imagePath'],
-            title: cardData[1]['title'],
-            subTitle: cardData[1]['subTitle'],
-            rating: cardData[1]['rating'],
-          ),
-        ],
-      ),
-      SizedBox(height: 14),
-      Row(
-        children: [
-          SizedBox(width: 4),
-          CardWidget(
-            imagePath: cardData[2]['imagePath'],
-            title: cardData[2]['title'],
-            subTitle: cardData[2]['subTitle'],
-            rating: cardData[2]['rating'],
-          ),
-          SizedBox(width: 4),
-          CardWidget(
-            imagePath: cardData[3]['imagePath'],
-            title: cardData[3]['title'],
-            subTitle: cardData[3]['subTitle'],
-            rating: cardData[3]['rating'],
-          ),
-        ],
-      ),
-
-      SizedBox(height: 14),
-
-      Row(
-        children: [
-          SizedBox(width: 4),
-          CardWidget(
-            imagePath: cardData[4]['imagePath'],
-            title: cardData[4]['title'],
-            subTitle: cardData[4]['subTitle'],
-            rating: cardData[4]['rating'],
-          ),
-          SizedBox(width: 4),
-          CardWidget(
-            imagePath: cardData[5]['imagePath'],
-            title: cardData[5]['title'],
-            subTitle: cardData[5]['subTitle'],
-            rating: cardData[5]['rating'],
-          ),
-        ],
-      ),
-
-      SizedBox(height: 14),
-
-      Row(
-        children: [
-          SizedBox(width: 4),
-          CardWidget(
-            imagePath: cardData[6]['imagePath'],
-            title: cardData[6]['title'],
-            subTitle: cardData[6]['subTitle'],
-            rating: cardData[6]['rating'],
-          ),
-          SizedBox(width: 4),
-          CardWidget(
-            imagePath: cardData[6]['imagePath'],
-            title: cardData[6]['title'],
-            subTitle: cardData[6]['subTitle'],
-            rating: cardData[6]['rating'],
-          ),
-        ],
-      ),
-    ],
-  ),
-),
-
-            
+              top: 320,
+              left: 12,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      SizedBox(width: 4),
+                      CardWidget(
+                        imagePath: cardData[0]['imagePath'],
+                        title: cardData[0]['title'],
+                        subTitle: cardData[0]['subTitle'],
+                        rating: cardData[0]['rating'],
+                      ),
+                      SizedBox(width: 4),
+                      CardWidget(
+                        imagePath: cardData[1]['imagePath'],
+                        title: cardData[1]['title'],
+                        subTitle: cardData[1]['subTitle'],
+                        rating: cardData[1]['rating'],
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 14),
+                  Row(
+                    children: [
+                      SizedBox(width: 4),
+                      CardWidget(
+                        imagePath: cardData[2]['imagePath'],
+                        title: cardData[2]['title'],
+                        subTitle: cardData[2]['subTitle'],
+                        rating: cardData[2]['rating'],
+                      ),
+                      SizedBox(width: 4),
+                      CardWidget(
+                        imagePath: cardData[3]['imagePath'],
+                        title: cardData[3]['title'],
+                        subTitle: cardData[3]['subTitle'],
+                        rating: cardData[3]['rating'],
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 14),
+                  Row(
+                    children: [
+                      SizedBox(width: 4),
+                      CardWidget(
+                        imagePath: cardData[4]['imagePath'],
+                        title: cardData[4]['title'],
+                        subTitle: cardData[4]['subTitle'],
+                        rating: cardData[4]['rating'],
+                      ),
+                      SizedBox(width: 4),
+                      CardWidget(
+                        imagePath: cardData[5]['imagePath'],
+                        title: cardData[5]['title'],
+                        subTitle: cardData[5]['subTitle'],
+                        rating: cardData[5]['rating'],
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 14),
+                  Row(
+                    children: [
+                      SizedBox(width: 4),
+                      CardWidget(
+                        imagePath: cardData[6]['imagePath'],
+                        title: cardData[6]['title'],
+                        subTitle: cardData[6]['subTitle'],
+                        rating: cardData[6]['rating'],
+                      ),
+                      SizedBox(width: 4),
+                      CardWidget(
+                        imagePath: cardData[7]['imagePath'],
+                        title: cardData[7]['title'],
+                        subTitle: cardData[7]['subTitle'],
+                        rating: cardData[7]['rating'],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
