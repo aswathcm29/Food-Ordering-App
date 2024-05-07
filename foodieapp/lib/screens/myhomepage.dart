@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:foodieapp/screens/productsinfo.dart';
 
@@ -16,7 +15,14 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  final TextEditingController _searchController = TextEditingController();
+
   // Sample data for demonstration
   final List<Map<String, dynamic>> cardData = [
     {
@@ -85,6 +91,22 @@ class MyHomePage extends StatelessWidget {
     // Add more data as needed
   ];
 
+  List<Map<String, dynamic>> filteredData = [];
+
+  @override
+  void initState() {
+    super.initState();
+    filteredData = cardData;
+  }
+
+  void filterData(String query) {
+    setState(() {
+      filteredData = cardData
+          .where((item) => item['title'].toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -151,6 +173,10 @@ class MyHomePage extends StatelessWidget {
                     SizedBox(width: 10),
                     Expanded(
                       child: TextField(
+                        controller: _searchController,
+                        onChanged: (value) {
+                          filterData(value);
+                        },
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           hintText: 'Search',
@@ -199,7 +225,7 @@ class MyHomePage extends StatelessWidget {
               left: 12,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: List.generate(cardData.length ~/ 2, (index) {
+                children: List.generate(filteredData.length ~/ 2, (index) {
                   final firstIndex = index * 2;
                   final secondIndex = firstIndex + 1;
                   return Padding(
@@ -208,21 +234,21 @@ class MyHomePage extends StatelessWidget {
                       children: [
                         SizedBox(width: 4),
                         CardWidget(
-                          imagePath: cardData[firstIndex]['imagePath'],
-                          title: cardData[firstIndex]['title'],
-                          subTitle: cardData[firstIndex]['subTitle'],
-                          rating: cardData[firstIndex]['rating'],
-                          price: cardData[firstIndex]['price'],
+                          imagePath: filteredData[firstIndex]['imagePath'],
+                          title: filteredData[firstIndex]['title'],
+                          subTitle: filteredData[firstIndex]['subTitle'],
+                          rating: filteredData[firstIndex]['rating'],
+                          price: filteredData[firstIndex]['price'],
 
                         ),
                         SizedBox(width: 4),
-                        if (secondIndex < cardData.length)
+                        if (secondIndex < filteredData.length)
                           CardWidget(
-                            imagePath: cardData[secondIndex]['imagePath'],
-                            title: cardData[secondIndex]['title'],
-                            subTitle: cardData[secondIndex]['subTitle'],
-                            rating: cardData[secondIndex]['rating'],
-                            price: cardData[secondIndex]['price'],
+                            imagePath: filteredData[secondIndex]['imagePath'],
+                            title: filteredData[secondIndex]['title'],
+                            subTitle: filteredData[secondIndex]['subTitle'],
+                            rating: filteredData[secondIndex]['rating'],
+                            price: filteredData[secondIndex]['price'],
 
                           ),
                       ],
@@ -320,7 +346,6 @@ class CustomButton extends StatelessWidget {
     );
   }
 }
-
 
 class CardWidget extends StatelessWidget {
   final String imagePath;
@@ -454,4 +479,3 @@ class CardWidget extends StatelessWidget {
     );
   }
 }
-
