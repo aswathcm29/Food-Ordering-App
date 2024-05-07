@@ -73,7 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     },
     {
-      'imagePath': 'assets/images/pizza_3.jpg',
+      'imagePath': 'assets/images/pizza3.jpg',
       'title': 'Vegetable Pizza',
       'subTitle': "Veggie's Pizza",
       'rating': 4.9,
@@ -380,7 +380,7 @@ class CardWidget extends StatelessWidget {
       },
       child: Container(
         width: 170,
-        height: 210,
+        //height: 220,
         margin: EdgeInsets.only(right: 14),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
@@ -424,7 +424,7 @@ class CardWidget extends StatelessWidget {
                     ),
                   ),
                   SizedBox(
-                    height: 2,
+                    height: 1,
                   ), // Maintain a small space between title and subtitle
                   Text(
                     subTitle,
@@ -442,7 +442,7 @@ class CardWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  margin: EdgeInsets.only(left: 10, top: 2),
+                  margin: EdgeInsets.only(left: 10, top: 6),
                   child: Row(
                     children: [
                       Icon(
@@ -464,7 +464,7 @@ class CardWidget extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.only(right: 16, top: 2),
+                  margin: EdgeInsets.only(right: 16, top: 6),
                   child: Icon(
                     Icons.favorite_outline_outlined,
                     size: 24,
