@@ -1,4 +1,4 @@
-/*import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:foodieapp/screens/productsinfo.dart';
 
 void main() {
@@ -480,10 +480,10 @@ class CardWidget extends StatelessWidget {
   }
 }
 
-*/
 
 
 
+/*
 import 'package:flutter/material.dart';
 import 'package:foodieapp/screens/productsinfo.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
@@ -1003,3 +1003,4 @@ class CardWidget extends StatelessWidget {
     );
   }
 }
+*/
