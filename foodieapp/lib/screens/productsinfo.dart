@@ -45,11 +45,11 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
       body: Stack(
         children: [
           Positioned(
-            top: 37,
-            left: 20,
+            top: 70,
+            left: 19,
             child: Container(
-              width: 370,
-              height: 370,
+              width: 350,
+              height: 320,
               child: Image.asset(
                 widget.imagePath,
                 fit: BoxFit.cover,

@@ -51,7 +51,7 @@ class MyHomePage extends StatelessWidget {
 
     },
     {
-      'imagePath': 'assets/images/pizza1.png',
+      'imagePath': 'assets/images/pizza1.jpg',
       'title': 'Cheese Pizza',
       'subTitle': "Cheese's Pizza",
       'rating': 3.9,
@@ -59,7 +59,7 @@ class MyHomePage extends StatelessWidget {
 
     },
     {
-      'imagePath': 'assets/images/pizza2.png',
+      'imagePath': 'assets/images/pizza2.jpg',
       'title': 'Chicken Pizza',
       'subTitle': "Chicken's Pizza",
       'rating': 4.9,
@@ -67,7 +67,7 @@ class MyHomePage extends StatelessWidget {
 
     },
     {
-      'imagePath': 'assets/images/pizza3.png',
+      'imagePath': 'assets/images/pizza3.jpg',
       'title': 'Vegetable Pizza',
       'subTitle': "Veggie's Pizza",
       'rating': 4.9,
@@ -75,7 +75,7 @@ class MyHomePage extends StatelessWidget {
 
     },
     {
-      'imagePath': 'assets/images/pizza4.png',
+      'imagePath': 'assets/images/pizza4.jpg',
       'title': 'Fajita Pizza',
       'subTitle': "Cheese Fajita's Pizza",
       'rating': 4.9,
