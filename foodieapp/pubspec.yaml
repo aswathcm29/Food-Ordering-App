@@ -32,7 +32,8 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^1.0.2
-
+  speech_to_text: ^5.0.0
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
