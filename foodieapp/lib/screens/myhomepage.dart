@@ -37,56 +37,56 @@ class _MyHomePageState extends State<MyHomePage> {
       'title': 'Cheeseburger',
       'subTitle': "Wendy's Burger",
       'rating': 4.9,
-      'price': '\$300'
+      'price': '300'
     },
     {
       'imagePath': 'assets/images/hamburger.png',
       'title': 'Hamburger',
       'subTitle': "Veggie's Burger",
       'rating': 4.9,
-      'price': '\$200'
+      'price': '200'
     },
     {
       'imagePath': 'assets/images/hamburger2.png',
       'title': 'Hamburger',
       'subTitle': "Veggie's Burger",
       'rating': 3.9,
-      'price': '\$400'
+      'price': '400'
     },
     {
       'imagePath': 'assets/images/hamburger3.png',
       'title': 'Hamburger',
       'subTitle': "Veggie's Burger",
       'rating': 4.9,
-      'price': '\$60'
+      'price': '60'
     },
     {
       'imagePath': 'assets/images/pizza_1.jpg',
       'title': 'Cheese Pizza',
       'subTitle': "Cheese's Pizza",
       'rating': 3.9,
-      'price': '\$380'
+      'price': '380'
     },
     {
       'imagePath': 'assets/images/pizza_2.jpg',
       'title': 'Chicken Pizza',
       'subTitle': "Chicken's Pizza",
       'rating': 4.9,
-      'price': '\$200'
+      'price': '200'
     },
     {
       'imagePath': 'assets/images/pizza3.jpg',
       'title': 'Vegetable Pizza',
       'subTitle': "Veggie's Pizza",
       'rating': 4.9,
-      'price': '\$270'
+      'price': '270'
     },
     {
       'imagePath': 'assets/images/pizza_4.jpg',
       'title': 'Fajita Pizza',
       'subTitle': "Cheese Fajita's Pizza",
       'rating': 4.9,
-      'price': '\$400'
+      'price': '400'
     },
     // Add more data as needed
   ];

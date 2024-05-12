@@ -1,5 +1,10 @@
-import 'package:flutter/material.dart';
+// ignore_for_file: prefer_const_constructors
 
+import 'dart:js_util';
+
+import 'package:flutter/material.dart';
+import 'package:foodieapp/screens/addtocart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProductInfoPage extends StatefulWidget {
   final String imagePath;
@@ -15,11 +20,9 @@ class ProductInfoPage extends StatefulWidget {
     required this.price,
   });
 
-
   @override
   _ProductInfoPageState createState() => _ProductInfoPageState();
 }
-
 
 class _ProductInfoPageState extends State<ProductInfoPage> {
   double _sliderValue = 0.5;
@@ -60,7 +63,7 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
             top: 400,
             left: 19,
             child: Text(
-             widget.title +" "+ widget.subTitle,
+              widget.title + " " + widget.subTitle,
               style: TextStyle(
                 fontFamily: 'Roboto',
                 fontSize: 25,
@@ -399,14 +402,32 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
                 ],
               ),
               child: Center(
-                child: Text(
-                  'ORDER NOW',
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: const Color.fromARGB(
-                        255, 238, 204, 204), // Changed color to white
+                child: TextButton(
+                  onPressed: () async {
+                    // Implement add to cart functionality here
+                    // Store item information in local storage
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    List<String>? cartItems =
+                        prefs.getStringList('cart_items') ?? [];
+                    String itemInfo =
+                        '${widget.title}:${widget.price}:${widget.imagePath}';
+                    cartItems.add(itemInfo);
+                    await prefs.setStringList('cart_items', cartItems);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => AddToCart()),
+                    );
+                  },
+                  child: Text(
+                    'Add to Cart',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: const Color.fromARGB(
+                          255, 238, 204, 204), // Changed color to white
+                    ),
                   ),
                 ),
               ),
@@ -417,8 +438,3 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
     );
   }
 }
-
-
-
-
-
