@@ -35,6 +35,9 @@ dependencies:
   shared_preferences: ^2.2.3
   firebase_core: ^2.27.0
   firebase_auth: ^4.17.8
+  google_maps_flutter: ^2.5.3
+  custom_map_markers: ^0.0.2+1
+  google_maps_flutter_web: ^0.5.4+3
   # speech_to_text: ^6.6.1
 
 dev_dependencies:

@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'dart:js_util';
+//import 'dart:js_util';
 
 import 'package:flutter/material.dart';
 import 'package:foodieapp/screens/addtocart.dart';

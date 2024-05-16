@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foodieapp/screens/checkoutview.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AddToCart extends StatefulWidget {
@@ -71,16 +72,27 @@ class _AddToCartState extends State<AddToCart> {
     return totalPrice;
   }
 
-  Future<void> _orderNow() async {
-    final checkAuth = _prefs.getString("auth");
-    if (checkAuth == "true") {
-      print('Order placed! Cart items: $cartItems');
-    } else {
-      print("Login First");
-      return;
-    }
-    await _clearCart();
-  }
+  // Future<void> _orderNow() async {
+  //   final checkAuth = _prefs.getString("auth");
+  //   if (checkAuth == "true") {
+  //     print('Order placed! Cart items: $cartItems');
+  //   } else {
+  //     print("Login First");
+  //     return;
+  //   }
+  //   await _clearCart();
+  // }
+
+Future<void> _orderNow() async {
+   double totalPrice = _calculateTotalPrice();
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => CheckoutView(totalPrice: totalPrice)),
+    );
+  
+}
+
 
   @override
   Widget build(BuildContext context) {
