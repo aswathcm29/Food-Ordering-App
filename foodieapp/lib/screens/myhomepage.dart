@@ -3,6 +3,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:foodieapp/screens/loginscreen.dart';
 import 'package:foodieapp/screens/productsinfo.dart';
 import 'package:foodieapp/widgets/cardwidget.dart';
 import 'package:foodieapp/widgets/custombutton.dart';
@@ -132,6 +133,21 @@ class _MyHomePageState extends State<MyHomePage> {
                     color: Color(0xFF3C2F2F),
                   ),
                 ),
+              ),
+              Positioned(
+                top: 60,
+                right: 19,
+                child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                      );
+                    },
+                    child: Icon(
+                      Icons.login_rounded,
+                      size: 40,
+                    )),
               ),
               Positioned(
                 top: 110,

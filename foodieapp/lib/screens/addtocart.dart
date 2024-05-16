@@ -141,13 +141,13 @@ class _AddToCartState extends State<AddToCart> {
                                 child: InkWell(
                                   onTap: () {
                                     setState(() {
-                                      cartItems[index]['quantity']++;
+                                      cartItems[index]['quantity']--;
                                       _saveCartItems();
                                     });
                                   },
                                   child: Center(
                                     child: Text(
-                                      "+",
+                                      "-",
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 20,
@@ -197,13 +197,13 @@ class _AddToCartState extends State<AddToCart> {
                                 child: InkWell(
                                   onTap: () {
                                     setState(() {
-                                      cartItems[index]['quantity']--;
+                                      cartItems[index]['quantity']++;
                                       _saveCartItems();
                                     });
                                   },
                                   child: Center(
                                     child: Text(
-                                      "-",
+                                      "+",
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 20,
