@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:foodieapp/screens/checkoutmessage.dart';
 import 'package:foodieapp/screens/color_extension.dart';
 import 'package:foodieapp/screens/round_button.dart';
-
 import 'change_address_view.dart';
-
 class CheckoutView extends StatefulWidget {
-  final double totalPrice; 
+  final double totalPrice;
 
   const CheckoutView({Key? key, required this.totalPrice}) : super(key: key);
+
   @override
   State<CheckoutView> createState() => _CheckoutViewState();
 }
@@ -47,8 +46,11 @@ class _CheckoutViewState extends State<CheckoutView> {
                       onPressed: () {
                         Navigator.pop(context);
                       },
-                      icon: Image.asset("assets/images/btn_back.png",
-                          width: 20, height: 20),
+                      icon: Image.asset(
+                        "assets/images/btn_back.png",
+                        width: 20,
+                        height: 20,
+                      ),
                     ),
                     const SizedBox(
                       width: 8,
@@ -100,8 +102,8 @@ class _CheckoutViewState extends State<CheckoutView> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                       ChangeAddressView()),
+                                builder: (context) => ChangeAddressView(),
+                              ),
                             );
                           },
                           child: Text(
@@ -331,17 +333,36 @@ class _CheckoutViewState extends State<CheckoutView> {
               Padding(
                 padding:
                     const EdgeInsets.symmetric(vertical: 20, horizontal: 25),
-                child: RoundButton(
-                    title: "Send Order",
-                    onPressed: () {
-                      showModalBottomSheet(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (context) => PdfPage(),
+                        //   ),
+                        // );
+                      },
+                      child: Text("Generate Receipt"),
+                    ),
+                    const SizedBox(height: 20),
+                    RoundButton(
+                      title: "Send Order",
+                      onPressed: () {
+                        showModalBottomSheet(
                           context: context,
                           backgroundColor: Colors.transparent,
                           isScrollControlled: true,
                           builder: (context) {
                             return const CheckoutMessageView();
-                          });
-                    }),
+                          },
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
