@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:foodieapp/screens/checkoutmessage.dart';
 import 'package:foodieapp/screens/color_extension.dart';
+import 'package:foodieapp/screens/invoicepage.dart';
 import 'package:foodieapp/screens/round_button.dart';
 import 'change_address_view.dart';
 class CheckoutView extends StatefulWidget {
@@ -338,12 +339,12 @@ class _CheckoutViewState extends State<CheckoutView> {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (context) => PdfPage(),
-                        //   ),
-                        // );
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => InvoicePage(),
+                          ),
+                        );
                       },
                       child: Text("Generate Receipt"),
                     ),
