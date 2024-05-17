@@ -101,7 +101,7 @@ class _CheckoutViewState extends State<CheckoutView> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      const ChangeAddressView()),
+                                       ChangeAddressView()),
                             );
                           },
                           child: Text(

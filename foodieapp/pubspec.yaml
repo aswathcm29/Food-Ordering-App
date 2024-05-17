@@ -38,6 +38,10 @@ dependencies:
   google_maps_flutter: ^2.5.3
   custom_map_markers: ^0.0.2+1
   google_maps_flutter_web: ^0.5.4+3
+  flutter_map: ^4.0.0
+  latlong2: ^0.8.2
+  geocoding: ^2.0.4
+  baseflow_plugin_template: ^1.0.0
   # speech_to_text: ^6.6.1
 
 dev_dependencies:
