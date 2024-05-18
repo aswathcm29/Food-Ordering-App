@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:foodieapp/screens/loginscreen.dart';
+import 'package:foodieapp/screens/userinfo.dart';
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -44,14 +45,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
         if (newUser.user != null) {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => LoginScreen()),
+            MaterialPageRoute(
+                builder: (context) =>
+                    userinfo(email: email, uid: newUser.user!.uid)),
           );
         } else {
           print('User not created');
         }
         // print(newUser);
       } catch (e) {
-        print(e);
+        print("Eror");
       }
     }
   }
@@ -83,8 +86,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          // mainAxisAlignment: MainAxisAlignment.center,
+          // crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             // TextField(
             //   // controller: _nameController,
@@ -93,6 +96,52 @@ class _SignUpScreenState extends State<SignUpScreen> {
             //     border: OutlineInputBorder(),
             //   ),
             // ),
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.white,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Image.asset(
+                      'assets/images/star.png',
+                      height: 45,
+                      width: 45,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+            Text(
+              'Foodie',
+              style: TextStyle(
+                fontFamily: 'Lobster',
+                fontSize: 45,
+                fontWeight: FontWeight.w400,
+                height: 60.61 / 45,
+                color: Color(0xFF3C2F2F),
+              ),
+            ),
+            SizedBox(height: 20),
+            Container(
+              width: double.infinity,
+              child: Text(
+                'Signup',
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontFamily: "poppins",
+                  fontSize: 35,
+                  fontWeight: FontWeight.bold,
+                  height: 60.61 / 45,
+                  color: Color(0xFF3C2F2F),
+                ),
+              ),
+            ),
             SizedBox(height: 20),
             TextField(
               controller: _emailController,
@@ -101,7 +150,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 20),
+
+            SizedBox(height: 40),
             TextField(
               controller: _passwordController,
               obscureText: !_isPasswordVisible,
@@ -122,7 +172,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 40),
             TextField(
               controller: _confirmPasswordController,
               obscureText: !_isPasswordVisible,
@@ -159,11 +209,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ],
             ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                SignupHandler();
-              },
-              child: Text('Sign Up'),
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.black,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextButton(
+                  style: ButtonStyle(
+                    foregroundColor: MaterialStateProperty.all(Colors.white),
+                  ),
+                  onPressed: () {
+                    SignupHandler();
+                  },
+                  child: Text('Sign Up'),
+                ),
+              ),
             ),
           ],
         ),

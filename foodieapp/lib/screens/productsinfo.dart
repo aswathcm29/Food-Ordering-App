@@ -53,7 +53,7 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
             child: Container(
               width: 350,
               height: 320,
-              child: Image.asset(
+              child: Image.network(
                 widget.imagePath,
                 fit: BoxFit.cover,
               ),

@@ -1,15 +1,15 @@
-// ignore_for_file: unused_import, prefer_const_constructors
-
+import 'dart:html';
 import 'dart:math';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:foodieapp/screens/addtocart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:foodieapp/screens/loginscreen.dart';
-import 'package:foodieapp/screens/productsinfo.dart';
 import 'package:foodieapp/widgets/cardwidget.dart';
-import 'package:foodieapp/widgets/custombutton.dart';
 import 'package:foodieapp/widgets/framebutton.dart';
 
-void main() {
+void main() async {
   runApp(MyApp());
 }
 
@@ -29,75 +29,80 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final TextEditingController _searchController = TextEditingController();
+  int _selectedIndex = 0;
 
-  // Sample data for demonstration
-  final List<Map<String, dynamic>> cardData = [
-    {
-      'imagePath': 'assets/images/cheeseburger.png',
-      'title': 'Cheeseburger',
-      'subTitle': "Wendy's Burger",
-      'rating': 4.9,
-      'price': '300'
-    },
-    {
-      'imagePath': 'assets/images/hamburger.png',
-      'title': 'Hamburger',
-      'subTitle': "Veggie's Burger",
-      'rating': 4.9,
-      'price': '200'
-    },
-    {
-      'imagePath': 'assets/images/hamburger2.png',
-      'title': 'Hamburger',
-      'subTitle': "Veggie's Burger",
-      'rating': 3.9,
-      'price': '400'
-    },
-    {
-      'imagePath': 'assets/images/hamburger3.png',
-      'title': 'Hamburger',
-      'subTitle': "Veggie's Burger",
-      'rating': 4.9,
-      'price': '60'
-    },
-    {
-      'imagePath': 'assets/images/pizza_1.jpg',
-      'title': 'Cheese Pizza',
-      'subTitle': "Cheese's Pizza",
-      'rating': 3.9,
-      'price': '380'
-    },
-    {
-      'imagePath': 'assets/images/pizza_2.jpg',
-      'title': 'Chicken Pizza',
-      'subTitle': "Chicken's Pizza",
-      'rating': 4.9,
-      'price': '200'
-    },
-    {
-      'imagePath': 'assets/images/pizza3.jpg',
-      'title': 'Vegetable Pizza',
-      'subTitle': "Veggie's Pizza",
-      'rating': 4.9,
-      'price': '270'
-    },
-    {
-      'imagePath': 'assets/images/pizza_4.jpg',
-      'title': 'Fajita Pizza',
-      'subTitle': "Cheese Fajita's Pizza",
-      'rating': 4.9,
-      'price': '400'
-    },
-    // Add more data as needed
-  ];
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    if (_selectedIndex == 0) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => MyHomePage()),
+      );
+    }
+    if (_selectedIndex == 1) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => AddToCart()),
+      );
+    }
+  }
+
+  final TextEditingController _searchController = TextEditingController();
+  bool _isLoggedIn = false;
+  String? _profileImageUrl;
+
+  List<Map<String, dynamic>> cardData = [];
 
   List<Map<String, dynamic>> filteredData = [];
 
   @override
   void initState() {
     super.initState();
-    filteredData = cardData;
+    _loadUserProfile();
+    _fetchProductDataFromFirestore();
+  }
+
+  Future<void> _fetchProductDataFromFirestore() async {
+    try {
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection('foodData').get();
+      List<Map<String, dynamic>> tempCardData = [];
+
+      for (var doc in querySnapshot.docs) {
+        tempCardData.add(doc.data() as Map<String, dynamic>);
+      }
+      setState(() {
+        cardData = tempCardData;
+        filteredData = tempCardData;
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> _loadUserProfile() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? uid = prefs.getString('uid');
+
+    if (uid != null) {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('UserData')
+          .doc(uid)
+          .get();
+
+      if (userDoc.exists) {
+        setState(() {
+          _isLoggedIn = true;
+          _profileImageUrl = userDoc['profileImage'];
+        });
+      } else {
+        setState(() {
+          _isLoggedIn = false;
+        });
+      }
+    }
   }
 
   void filterData(String query) {
@@ -106,6 +111,15 @@ class _MyHomePageState extends State<MyHomePage> {
           .where((item) =>
               item['title'].toLowerCase().contains(query.toLowerCase()))
           .toList();
+    });
+  }
+
+  void _logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('uid');
+    setState(() {
+      _isLoggedIn = false;
+      _profileImageUrl = null;
     });
   }
 
@@ -137,17 +151,54 @@ class _MyHomePageState extends State<MyHomePage> {
               Positioned(
                 top: 60,
                 right: 19,
-                child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => LoginScreen()),
-                      );
-                    },
-                    child: Icon(
-                      Icons.login_rounded,
-                      size: 40,
-                    )),
+                child: _isLoggedIn
+                    ? InkWell(
+                        onTap: () {
+                          showMenu(
+                            context: context,
+                            position: RelativeRect.fromLTRB(1000, 120, 0, 0),
+                            items: [
+                              PopupMenuItem(
+                                child: ListTile(
+                                  leading: Icon(Icons.shopping_cart),
+                                  title: Text('View Cart'),
+                                  onTap: () {
+                                    // Navigate to cart screen
+                                    Navigator.pop(context); // Close the menu
+                                  },
+                                ),
+                              ),
+                              PopupMenuItem(
+                                child: ListTile(
+                                  leading: Icon(Icons.logout),
+                                  title: Text('Logout'),
+                                  onTap: () {
+                                    _logout();
+                                    Navigator.pop(context); // Close the menu
+                                  },
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                        child: CircleAvatar(
+                          backgroundImage: NetworkImage(_profileImageUrl!),
+                          radius: 30,
+                        ),
+                      )
+                    : InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LoginScreen()),
+                          );
+                        },
+                        child: Icon(
+                          Icons.login_rounded,
+                          size: 40,
+                        ),
+                      ),
               ),
               Positioned(
                 top: 110,
@@ -279,14 +330,25 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_cart),
+            label: 'Cart',
+          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.person),
+          //   label: 'Profile',
+          // ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.green[800],
+        onTap: _onItemTapped,
+      ),
     );
   }
 }
-
-
-
-
-
-
-
-
