@@ -279,194 +279,188 @@ class InvoicePage extends StatelessWidget {
     );
   }
 
-  Future<Uint8List> generatePdf() async {
-    final pdf = pw.Document();
+ Future<Uint8List> generatePdf() async {
+  final pdf = pw.Document();
 
-    final netTotal = items.fold(
-        0.0, (double sum, item) => sum + item.unitPrice * item.quantity);
-    final vatTotal = items.fold(0.0,
-        (double sum, item) => sum + item.unitPrice * item.quantity * item.vat);
+  final netTotal = items.fold(
+      0.0, (double sum, item) => sum + item.unitPrice * item.quantity);
+  final vatTotal = items.fold(0.0,
+      (double sum, item) => sum + item.unitPrice * item.quantity * item.vat);
 
-    // Load font
-    final fontData =
-        await rootBundle.load('assets/fonts/roboto/Roboto-Regular.ttf');
-    final ttf = pw.Font.ttf(fontData.buffer.asByteData());
+  // Load font
+  final fontData =
+      await rootBundle.load('assets/fonts/roboto/Roboto-Regular.ttf');
+  final ttf = pw.Font.ttf(fontData.buffer.asByteData());
 
-    pdf.addPage(
-      pw.Page(
-        build: (context) => pw.Column(
-          crossAxisAlignment: pw.CrossAxisAlignment.start,
-          children: [
-            pw.Container(
-              margin: pw.EdgeInsets.all(16),
-              padding: pw.EdgeInsets.all(16),
-              decoration: pw.BoxDecoration(
-                border: pw.Border.all(color: PdfColors.grey400),
-              ),
-              child: pw.Column(
-                crossAxisAlignment: pw.CrossAxisAlignment.start,
-                children: [
-                  pw.Text(
-                    'Foodie',
-                    style: pw.TextStyle(
-                      font: ttf,
-                      fontSize: 40,
-                      color: PdfColor.fromInt(0xFF6A6A6A),
-                      fontStyle: pw.FontStyle.italic, // Italic style
-                    ),
-                  ),
-                  pw.SizedBox(height: 10),
-                  pw.Container(
-                    padding: pw.EdgeInsets.all(12),
-                    decoration: pw.BoxDecoration(
-                      border: pw.Border.all(color: PdfColors.grey),
-                    ),
-                    child: pw.Column(
-                      crossAxisAlignment: pw.CrossAxisAlignment.start,
-                      children: [
-                        pw.Row(
-                          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                          children: [
-                            pw.Text(
-                              'Invoice Information',
-                              style: pw.TextStyle(
-                                fontSize: 18,
-                                fontWeight: pw.FontWeight.bold,
-                              ),
-                            ),
-                            pw.Icon(pw.IconData(0xe047)),
-                          ],
-                        ),
-                        pw.SizedBox(height: 10),
-                        pw.Text(
-                            'Invoice Number: ${invoiceInfo.getInvoiceNumber()}'),
-                        pw.Text(
-                            'Invoice Date: ${Utils.formatDate(invoiceInfo.date)}'),
-                        pw.Text(
-                            'Due Date: ${Utils.formatDate(invoiceInfo.dueDate)}'),
-                        pw.SizedBox(height: 10),
-                        pw.Text(
-                          'Description: ${invoiceInfo.description}',
-                          style: pw.TextStyle(fontStyle: pw.FontStyle.italic),
-                        ),
-                      ],
-                    ),
-                  ),
-                  pw.SizedBox(height: 10),
-                  pw.Container(
-                    padding: pw.EdgeInsets.all(12),
-                    decoration: pw.BoxDecoration(
-                      border: pw.Border.all(color: PdfColors.grey),
-                    ),
-                    child: pw.Column(
-                      crossAxisAlignment: pw.CrossAxisAlignment.start,
-                      children: [
-                        pw.Row(
-                          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                          children: [
-                            pw.Text(
-                              'Items',
-                              style: pw.TextStyle(
-                                fontSize: 18,
-                                fontWeight: pw.FontWeight.bold,
-                              ),
-                            ),
-                            pw.Icon(pw.IconData(0xe047)),
-                          ],
-                        ),
-                        pw.SizedBox(height: 10),
-                        pw.Table.fromTextArray(
-                          headers: [
-                            'Description',
-                            'Quantity',
-                            'Unit Price',
-                            'Total'
-                          ],
-                          data: items.map((item) {
-                            final total =
-                                item.unitPrice * item.quantity * (1 + item.vat);
-                            return [
-                              item.description,
-                              item.quantity.toString(),
-                              Utils.formatPrice(item.unitPrice),
-                              Utils.formatPrice(total),
-                            ];
-                          }).toList(),
-                        ),
-                      ],
-                    ),
-                  ),
-                  pw.SizedBox(height: 10),
-                  pw.Container(
-                    padding: pw.EdgeInsets.all(12),
-                    decoration: pw.BoxDecoration(
-                      border: pw.Border.all(color: PdfColors.grey),
-                    ),
-                    child: pw.Column(
-                      crossAxisAlignment: pw.CrossAxisAlignment.start,
-                      children: [
-                        pw.Row(
-                          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                          children: [
-                            pw.Text(
-                              'Total Amount',
-                              style: pw.TextStyle(
-                                fontSize: 18,
-                                fontWeight: pw.FontWeight.bold,
-                              ),
-                            ),
-                            pw.Icon(pw.IconData(0xe047)),
-                          ],
-                        ),
-                        pw.SizedBox(height: 10),
-                        pw.Text('Net Total: ${Utils.formatPrice(netTotal)}'),
-                        pw.Divider(),
-                        pw.Text(
-                          'Total Amount Due: ${Utils.formatPrice(netTotal + vatTotal)}',
-                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ),
-                  pw.SizedBox(height: 10),
-                  pw.Container(
-                    padding: pw.EdgeInsets.all(12),
-                    decoration: pw.BoxDecoration(
-                      border: pw.Border.all(color: PdfColors.grey),
-                    ),
-                    child: pw.Column(
-                      crossAxisAlignment: pw.CrossAxisAlignment.start,
-                      children: [
-                        pw.Row(
-                          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                          children: [
-                            pw.Text(
-                              'Customer Information',
-                              style: pw.TextStyle(
-                                fontSize: 18,
-                                fontWeight: pw.FontWeight.bold,
-                              ),
-                            ),
-                            pw.Icon(pw.IconData(0xe047)),
-                          ],
-                        ),
-                        pw.SizedBox(height: 10),
-                        pw.Text('Customer Name: ${customer.name}'),
-                        pw.Text('Customer Email: ${customer.email}'),
-                        pw.Text('Customer Address: ${customer.address}'),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+  pdf.addPage(
+    pw.Page(
+      build: (context) => pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
+          pw.Container(
+            margin: pw.EdgeInsets.all(16),
+            padding: pw.EdgeInsets.all(16),
+            decoration: pw.BoxDecoration(
+              border: pw.Border.all(color: PdfColors.grey400),
             ),
-          ],
-        ),
+            child: pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Text(
+                  'Foodie',
+                  style: pw.TextStyle(
+                    font: ttf,
+                    fontSize: 40,
+                    color: PdfColor.fromInt(0xFF6A6A6A),
+                    fontStyle: pw.FontStyle.italic, // Italic style
+                  ),
+                ),
+                pw.SizedBox(height: 10),
+                pw.Container(
+                  padding: pw.EdgeInsets.all(12),
+                  decoration: pw.BoxDecoration(
+                    border: pw.Border.all(color: PdfColors.grey),
+                  ),
+                  child: pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                        children: [
+                          pw.Text(
+                            'Invoice Information',
+                            style: pw.TextStyle(
+                              fontSize: 18,
+                              fontWeight: pw.FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      pw.SizedBox(height: 10),
+                      pw.Text('Invoice Number: ${invoiceInfo.getInvoiceNumber()}'),
+                      pw.Text('Invoice Date: ${Utils.formatDate(invoiceInfo.date)}'),
+                      pw.Text('Due Date: ${Utils.formatDate(invoiceInfo.dueDate)}'),
+                      pw.SizedBox(height: 10),
+                      pw.Text(
+                        'Description: ${invoiceInfo.description}',
+                        style: pw.TextStyle(fontStyle: pw.FontStyle.italic),
+                      ),
+                    ],
+                  ),
+                ),
+                pw.SizedBox(height: 10),
+                pw.Container(
+                  padding: pw.EdgeInsets.all(12),
+                  decoration: pw.BoxDecoration(
+                    border: pw.Border.all(color: PdfColors.grey),
+                  ),
+                  child: pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                        children: [
+                          pw.Text(
+                            'Items',
+                            style: pw.TextStyle(
+                              fontSize: 18,
+                              fontWeight: pw.FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      pw.SizedBox(height: 10),
+                      pw.Table.fromTextArray(
+                        headers: [
+                          'Description',
+                          'Quantity',
+                          'Unit Price',
+                          'Total'
+                        ],
+                        data: items.map((item) {
+                          final total =
+                              item.unitPrice * item.quantity * (1 + item.vat);
+                          return [
+                            item.description,
+                            item.quantity.toString(),
+                            Utils.formatPrice(item.unitPrice),
+                            Utils.formatPrice(total),
+                          ];
+                        }).toList(),
+                      ),
+                    ],
+                  ),
+                ),
+                pw.SizedBox(height: 10),
+                pw.Container(
+                  padding: pw.EdgeInsets.all(12),
+                  decoration: pw.BoxDecoration(
+                    border: pw.Border.all(color: PdfColors.grey),
+                  ),
+                  child: pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                        children: [
+                          pw.Text(
+                            'Total Amount',
+                            style: pw.TextStyle(
+                              fontSize: 18,
+                              fontWeight: pw.FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      pw.SizedBox(height: 10),
+                      pw.Text('Net Total: ${Utils.formatPrice(netTotal)}'),
+                      pw.Divider(),
+                      pw.Text(
+                        'Total Amount Due: ${Utils.formatPrice(netTotal + vatTotal)}',
+                        style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
+                pw.SizedBox(height: 10),
+                pw.Container(
+                  padding: pw.EdgeInsets.all(12),
+                  decoration: pw.BoxDecoration(
+                    border: pw.Border.all(color: PdfColors.grey),
+                  ),
+                  child: pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                        children: [
+                          pw.Text(
+                            'Customer Information',
+                            style: pw.TextStyle(
+                              fontSize: 18,
+                              fontWeight: pw.FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      pw.SizedBox(height: 10),
+                      pw.Text('Customer Name: ${customer.name}'),
+                      pw.Text('Customer Email: ${customer.email}'),
+                      pw.Text('Customer Address: ${customer.address}'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
-    );
+    ),
+  );
 
-    return pdf.save();
-  }
+  return pdf.save();
+}
+
 }
 
 class Customer {

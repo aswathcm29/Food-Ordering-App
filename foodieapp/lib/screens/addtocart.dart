@@ -83,16 +83,15 @@ class _AddToCartState extends State<AddToCart> {
   //   await _clearCart();
   // }
 
-Future<void> _orderNow() async {
-   double totalPrice = _calculateTotalPrice();
+  Future<void> _orderNow() async {
+    double totalPrice = _calculateTotalPrice();
 
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => CheckoutView(totalPrice: totalPrice)),
+      MaterialPageRoute(
+          builder: (context) => CheckoutView(totalPrice: totalPrice)),
     );
-  
-}
-
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -247,10 +246,34 @@ Future<void> _orderNow() async {
                       trailing: IconButton(
                         icon: Icon(Icons.remove_shopping_cart),
                         onPressed: () {
-                          setState(() {
-                            cartItems.removeAt(index);
-                            _saveCartItems();
-                          });
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Remove Item'),
+                                content: Text(
+                                    'Are you sure you want to remove this item from your cart?'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text('Cancel'),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        cartItems.removeAt(index);
+                                        _saveCartItems();
+                                      });
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text('Remove'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
                         },
                       ),
                     ),
