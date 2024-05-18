@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:foodieapp/screens/checkoutview.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:motion_toast/motion_toast.dart';
 
 class AddToCart extends StatefulWidget {
   const AddToCart({Key? key}) : super(key: key);
@@ -73,20 +74,32 @@ class _AddToCartState extends State<AddToCart> {
     return totalPrice;
   }
 
-  // Future<void> _orderNow() async {
-  //   final checkAuth = _prefs.getString("auth");
-  //   if (checkAuth == "true") {
-  //     print('Order placed! Cart items: $cartItems');
-  //   } else {
-  //     print("Login First");
-  //     return;
-  //   }
-  //   await _clearCart();
-  // }
-
   Future<void> _orderNow() async {
-    double totalPrice = _calculateTotalPrice();
+    final checkAuth = _prefs.getString("uid");
 
+    if (checkAuth == "" || checkAuth == null) {
+      MotionToast toast = MotionToast(
+        primaryColor: Colors.red,
+        animationType: AnimationType.fromTop,
+        position: MotionToastPosition.top,
+        description: Center(
+          child: const Text(
+            'Login First',
+            style: TextStyle(fontSize: 12),
+          ),
+        ),
+        dismissable: true,
+        displaySideBar: false,
+      );
+      toast.show(context);
+      print("Login First");
+      return;
+    } else {
+      print('Order placed! Cart items: $cartItems');
+    }
+
+    double totalPrice = _calculateTotalPrice();
+    // await _clearCart();
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -324,11 +337,24 @@ class _AddToCartState extends State<AddToCart> {
               ],
             ),
             SizedBox(height: 20),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('Back to Shopping'),
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.blue[400],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextButton(
+                  style: ButtonStyle(
+                    foregroundColor: MaterialStateProperty.all(Colors.white),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('Back to Shoping'),
+                ),
+              ),
             ),
           ],
         ),

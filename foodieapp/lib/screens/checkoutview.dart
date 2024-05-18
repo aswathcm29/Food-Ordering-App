@@ -1,9 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:foodieapp/screens/checkoutmessage.dart';
-import 'package:foodieapp/screens/color_extension.dart';
-import 'package:foodieapp/screens/invoicepage.dart';
-import 'package:foodieapp/screens/round_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'checkoutmessage.dart';
+import 'color_extension.dart';
+import 'invoicepage.dart';
+import 'round_button.dart';
 import 'change_address_view.dart';
+
 class CheckoutView extends StatefulWidget {
   final double totalPrice;
 
@@ -21,6 +24,61 @@ class _CheckoutViewState extends State<CheckoutView> {
   ];
 
   int selectMethod = -1;
+  late String deliveryAddress = "";
+  String deliveryPhone = "";
+  String deliveryName = "";
+  String deliveryEmail = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? uid = prefs.getString('uid');
+
+      if (uid != null) {
+        var userDoc = await FirebaseFirestore.instance
+            .collection('UserData')
+            .doc(uid)
+            .get();
+
+        if (userDoc.exists) {
+          setState(() {
+            deliveryAddress = userDoc.get('address') ?? "No address available";
+            deliveryEmail = userDoc.get("email") ?? "No email available";
+            deliveryName = userDoc.get("fullName") ?? "No name available";
+            deliveryPhone = userDoc.get("contact") ?? "No contact available";
+          });
+        } else {
+          setState(() {
+            deliveryAddress = "No address available";
+            deliveryEmail = "No email available";
+            deliveryName = "No name available";
+            deliveryPhone = "No contact available";
+          });
+        }
+      } else {
+        setState(() {
+          deliveryAddress = "User ID not found";
+          deliveryEmail = "User ID not found";
+          deliveryName = "User ID not found";
+          deliveryPhone = "User ID not found";
+        });
+      }
+    } catch (e) {
+      print("Error fetching user data: $e");
+      setState(() {
+        deliveryAddress = "Error loading address";
+        deliveryEmail = "Error loading email";
+        deliveryName = "Error loading name";
+        deliveryPhone = "Error loading contact";
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +86,7 @@ class _CheckoutViewState extends State<CheckoutView> {
     double discount = 4; // Example discount
     double subTotal = widget.totalPrice;
     double total = subTotal + deliveryCost - discount;
+
     return Scaffold(
       backgroundColor: TColor.white,
       body: SingleChildScrollView(
@@ -36,9 +95,7 @@ class _CheckoutViewState extends State<CheckoutView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(
-                height: 46,
-              ),
+              const SizedBox(height: 46),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Row(
@@ -53,16 +110,15 @@ class _CheckoutViewState extends State<CheckoutView> {
                         height: 20,
                       ),
                     ),
-                    const SizedBox(
-                      width: 8,
-                    ),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         "Checkout",
                         style: TextStyle(
-                            color: TColor.primaryText,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w800),
+                          color: TColor.primaryText,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
                     ),
                   ],
@@ -80,24 +136,23 @@ class _CheckoutViewState extends State<CheckoutView> {
                       style:
                           TextStyle(color: TColor.secondaryText, fontSize: 12),
                     ),
-                    const SizedBox(
-                      height: 8,
-                    ),
+                    const SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Expanded(
                           child: Text(
-                            "653 Nostrand Ave.\nBrooklyn, NY 11216",
+                            deliveryAddress.isEmpty
+                                ? "Loading address..."
+                                : deliveryAddress,
                             style: TextStyle(
-                                color: TColor.primaryText,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w700),
+                              color: TColor.primaryText,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
-                        const SizedBox(
-                          width: 4,
-                        ),
+                        const SizedBox(width: 4),
                         TextButton(
                           onPressed: () {
                             Navigator.push(
@@ -111,19 +166,18 @@ class _CheckoutViewState extends State<CheckoutView> {
                             "Change",
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: TColor.primary,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700),
+                              color: TColor.primary,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ],
                 ),
               ),
-              const SizedBox(
-                height: 20,
-              ),
+              const SizedBox(height: 20),
               Container(
                 decoration: BoxDecoration(color: TColor.textfield),
                 height: 8,
@@ -140,9 +194,10 @@ class _CheckoutViewState extends State<CheckoutView> {
                           "Payment method",
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              color: TColor.secondaryText,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500),
+                            color: TColor.secondaryText,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                         TextButton.icon(
                           onPressed: () {},
@@ -150,69 +205,75 @@ class _CheckoutViewState extends State<CheckoutView> {
                           label: Text(
                             "Add Card",
                             style: TextStyle(
-                                color: TColor.primary,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700),
+                              color: TColor.primary,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
-                        )
+                        ),
                       ],
                     ),
                     ListView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        padding: EdgeInsets.zero,
-                        shrinkWrap: true,
-                        itemCount: paymentArr.length,
-                        itemBuilder: (context, index) {
-                          var pObj = paymentArr[index] as Map? ?? {};
-                          return Container(
-                            margin: const EdgeInsets.symmetric(vertical: 8.0),
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 8.0, horizontal: 15.0),
-                            decoration: BoxDecoration(
-                                color: TColor.textfield,
-                                borderRadius: BorderRadius.circular(5),
-                                border: Border.all(
-                                    color:
-                                        TColor.secondaryText.withOpacity(0.2))),
-                            child: Row(
-                              children: [
-                                Image.asset(pObj["icon"].toString(),
-                                    width: 50, height: 20, fit: BoxFit.contain),
-                                // const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    pObj["name"],
-                                    style: TextStyle(
-                                        color: TColor.primaryText,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500),
+                      physics: const NeverScrollableScrollPhysics(),
+                      padding: EdgeInsets.zero,
+                      shrinkWrap: true,
+                      itemCount: paymentArr.length,
+                      itemBuilder: (context, index) {
+                        var pObj = paymentArr[index] as Map? ?? {};
+                        return Container(
+                          margin: const EdgeInsets.symmetric(vertical: 8.0),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 8.0,
+                            horizontal: 15.0,
+                          ),
+                          decoration: BoxDecoration(
+                            color: TColor.textfield,
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(
+                              color: TColor.secondaryText.withOpacity(0.2),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Image.asset(
+                                pObj["icon"].toString(),
+                                width: 50,
+                                height: 20,
+                                fit: BoxFit.contain,
+                              ),
+                              Expanded(
+                                child: Text(
+                                  pObj["name"],
+                                  style: TextStyle(
+                                    color: TColor.primaryText,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
-
-                                InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      selectMethod = index;
-                                    });
-                                  },
-                                  child: Icon(
-                                    selectMethod == index
-                                        ? Icons.radio_button_on
-                                        : Icons.radio_button_off,
-                                    color: TColor.primary,
-                                    size: 15,
-                                  ),
-                                )
-                              ],
-                            ),
-                          );
-                        })
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    selectMethod = index;
+                                  });
+                                },
+                                child: Icon(
+                                  selectMethod == index
+                                      ? Icons.radio_button_on
+                                      : Icons.radio_button_off,
+                                  color: TColor.primary,
+                                  size: 15,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
                   ],
                 ),
               ),
-              const SizedBox(
-                height: 20,
-              ),
+              const SizedBox(height: 20),
               Container(
                 decoration: BoxDecoration(color: TColor.textfield),
                 height: 8,
@@ -222,9 +283,7 @@ class _CheckoutViewState extends State<CheckoutView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(
-                      height: 15,
-                    ),
+                    const SizedBox(height: 15),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -232,22 +291,22 @@ class _CheckoutViewState extends State<CheckoutView> {
                           "Sub Total",
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              color: TColor.primaryText,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500),
+                            color: TColor.primaryText,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                         Text(
                           "\$${widget.totalPrice.toStringAsFixed(2)}",
                           style: TextStyle(
-                              color: TColor.primaryText,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700),
-                        )
+                            color: TColor.primaryText,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                       ],
                     ),
-                    const SizedBox(
-                      height: 8,
-                    ),
+                    const SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -255,22 +314,22 @@ class _CheckoutViewState extends State<CheckoutView> {
                           "Delivery Cost",
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              color: TColor.primaryText,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500),
+                            color: TColor.primaryText,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                         Text(
                           "\$2",
                           style: TextStyle(
-                              color: TColor.primaryText,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700),
-                        )
+                            color: TColor.primaryText,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                       ],
                     ),
-                    const SizedBox(
-                      height: 8,
-                    ),
+                    const SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -278,29 +337,27 @@ class _CheckoutViewState extends State<CheckoutView> {
                           "Discount",
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              color: TColor.primaryText,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500),
+                            color: TColor.primaryText,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                         Text(
                           "-\$4",
                           style: TextStyle(
-                              color: TColor.primaryText,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700),
-                        )
+                            color: TColor.primaryText,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                       ],
                     ),
-                    const SizedBox(
-                      height: 15,
-                    ),
+                    const SizedBox(height: 15),
                     Divider(
                       color: TColor.secondaryText.withOpacity(0.5),
                       height: 1,
                     ),
-                    const SizedBox(
-                      height: 15,
-                    ),
+                    const SizedBox(height: 15),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -308,25 +365,25 @@ class _CheckoutViewState extends State<CheckoutView> {
                           "Total",
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              color: TColor.primaryText,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500),
+                            color: TColor.primaryText,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                         Text(
                           "\$${total.toStringAsFixed(2)}",
                           style: TextStyle(
-                              color: TColor.primaryText,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700),
-                        )
+                            color: TColor.primaryText,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                       ],
                     ),
                   ],
                 ),
               ),
-              const SizedBox(
-                height: 20,
-              ),
+              const SizedBox(height: 20),
               Container(
                 decoration: BoxDecoration(color: TColor.textfield),
                 height: 8,
@@ -342,7 +399,12 @@ class _CheckoutViewState extends State<CheckoutView> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => InvoicePage(),
+                            builder: (context) => InvoicePage(
+                                deliveryName: deliveryName,
+                                deliveryEmail: deliveryEmail,
+                                deliveryAddress: deliveryAddress,
+                                deliveryCost: deliveryCost.toString(),
+                                deliveryPhone: deliveryPhone),
                           ),
                         );
                       },

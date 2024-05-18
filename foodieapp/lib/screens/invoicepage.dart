@@ -1,45 +1,78 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'dart:convert';
+import 'dart:typed_data';
+import 'package:flutter/services.dart' show rootBundle;
 
-class Utils {
-  static String formatPrice(double price) => '\$ ${price.toStringAsFixed(2)}';
-  static String formatDate(DateTime date) => DateFormat.yMd().format(date);
+final InvoiceInfo invoiceInfo = InvoiceInfo(
+  description: 'First Order Invoice',
+  date: DateTime.now(),
+  dueDate: DateTime.now().add(Duration(days: 7)),
+);
+
+Future<void> saveCartItems(List<InvoiceItem> items) async {
+  final prefs = await SharedPreferences.getInstance();
+  List<String> itemsJson =
+      items.map((item) => jsonEncode(item.toJson())).toList();
+  await prefs.setStringList('cartItems', itemsJson);
 }
 
-class InvoicePage extends StatelessWidget {
-  final List<InvoiceItem> items = [
-    InvoiceItem(
-      description: 'Coffee',
-      date: DateTime.now(),
-      quantity: 3,
-      vat: 0.19,
-      unitPrice: 5.99,
-    ),
-    // Add more items as needed...
-  ];
+Future<List<InvoiceItem>> getCartItems() async {
+  final prefs = await SharedPreferences.getInstance();
+  List<String>? itemsJson = prefs.getStringList('cart_items');
 
-  final InvoiceInfo invoiceInfo = InvoiceInfo(
-    description: 'First Order Invoice',
-    date: DateTime.now(),
-    dueDate: DateTime.now().add(Duration(days: 7)),
-  );
+  if (itemsJson != null) {
+    try {
+      // Log the retrieved data
+      print('Retrieved items: $itemsJson');
 
-  final Supplier supplier = Supplier(
-    name: 'Foodie-Food Order',
-    address: '',
-    paymentInfo: 'Cash On Delivery',
-  );
+      // Decode the items
+      return itemsJson.map((item) {
+        // Log the individual item before parsing
+        print('Parsing item: $item');
+        return InvoiceItem.fromString(item);
+      }).toList();
+    } catch (e) {
+      // Log the error and return an empty list
+      print('Error decoding items: $e');
+      return [];
+    }
+  } else {
+    return [];
+  }
+}
 
-  final Customer customer = Customer(
-    name: 'Google',
-    email: 'contact@google.com',
-    address: 'Mountain View, California, United States',
-  );
+class InvoicePage extends StatefulWidget {
+  final String deliveryName;
+  final String deliveryAddress;
+  final String deliveryPhone;
+  final String deliveryEmail;
+  final String deliveryCost;
+
+  InvoicePage({
+    required this.deliveryName,
+    required this.deliveryAddress,
+    required this.deliveryPhone,
+    required this.deliveryEmail,
+    required this.deliveryCost,
+  });
+
+  @override
+  _InvoicePageState createState() => _InvoicePageState();
+}
+
+class _InvoicePageState extends State<InvoicePage> {
+  late Future<List<InvoiceItem>> futureItems;
+
+  @override
+  void initState() {
+    super.initState();
+    futureItems = getCartItems();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,51 +81,79 @@ class InvoicePage extends StatelessWidget {
         title: Text('Invoice'),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Container(
-            margin: EdgeInsets.all(16),
-            padding: EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              border: Border.all(
-                color: Colors.grey[400]!,
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Center(
-                  child: Text(
-                    'Foodie',
-                    style: TextStyle(
-                      fontFamily: 'Lobster',
-                      fontSize: 40,
-                      fontWeight: FontWeight.w400,
-                      height: 1,
-                      color: Color(0xFF6A6A6A),
-                    ),
+        child: FutureBuilder<List<InvoiceItem>>(
+          future: futureItems,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Center(child: Text('No items found'));
+            } else {
+              final items = snapshot.data!;
+              final customer = Customer(
+                name: widget.deliveryName,
+                email: widget.deliveryEmail,
+                address: widget.deliveryAddress,
+              );
+              final invoiceInfo = InvoiceInfo(
+                description: 'First Order Invoice',
+                date: DateTime.now(),
+                dueDate: DateTime.now().add(Duration(days: 7)),
+              );
+              final supplier = Supplier(
+                name: 'Foodie-Food Order',
+                address: '',
+                paymentInfo: 'Cash On Delivery',
+              );
+
+              return SingleChildScrollView(
+                child: Container(
+                  margin: EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    border: Border.all(color: Colors.grey[400]!),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Center(
+                        child: Text(
+                          'Foodie',
+                          style: TextStyle(
+                            fontFamily: 'Lobster',
+                            fontSize: 40,
+                            fontWeight: FontWeight.w400,
+                            height: 1,
+                            color: Color(0xFF6A6A6A),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      buildInfoCard(invoiceInfo),
+                      SizedBox(height: 10),
+                      buildItemsTable(items),
+                      SizedBox(height: 10),
+                      buildTotal(items),
+                      SizedBox(height: 10),
+                      buildContactInfo(customer),
+                      SizedBox(height: 10),
+                      buildDownloadButton(context, customer, items),
+                      SizedBox(height: 10),
+                    ],
                   ),
                 ),
-                SizedBox(height: 10),
-                buildInfoCard(),
-                SizedBox(height: 10),
-                buildItemsTable(),
-                SizedBox(height: 10),
-                buildTotal(),
-                SizedBox(height: 10),
-                buildContactInfo(),
-                SizedBox(height: 10),
-                buildDownloadButton(context),
-                SizedBox(height: 10),
-              ],
-            ),
-          ),
+              );
+            }
+          },
         ),
       ),
     );
   }
 
-  Widget buildInfoCard() {
+  Widget buildInfoCard(InvoiceInfo invoiceInfo) {
     return Card(
       elevation: 4,
       child: Padding(
@@ -125,7 +186,7 @@ class InvoicePage extends StatelessWidget {
     );
   }
 
-  Widget buildItemsTable() {
+  Widget buildItemsTable(List<InvoiceItem> items) {
     return Card(
       elevation: 4,
       child: Padding(
@@ -173,7 +234,7 @@ class InvoicePage extends StatelessWidget {
     );
   }
 
-  Widget buildTotal() {
+  Widget buildTotal(List<InvoiceItem> items) {
     double netTotal = 0;
     double vatTotal = 0;
 
@@ -212,7 +273,7 @@ class InvoicePage extends StatelessWidget {
     );
   }
 
-  Widget buildContactInfo() {
+  Widget buildContactInfo(Customer customer) {
     return Card(
       elevation: 4,
       child: Padding(
@@ -251,12 +312,7 @@ class InvoicePage extends StatelessWidget {
               children: [
                 Icon(Icons.location_on, color: Colors.blue),
                 SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    'Customer Address: ${customer.address}',
-                    softWrap: true,
-                  ),
-                ),
+                Text('Customer Address: ${customer.address}'),
               ],
             ),
           ],
@@ -265,10 +321,11 @@ class InvoicePage extends StatelessWidget {
     );
   }
 
-  Widget buildDownloadButton(BuildContext context) {
+  Widget buildDownloadButton(
+      BuildContext context, Customer customer, List<InvoiceItem> items) {
     return ElevatedButton.icon(
       onPressed: () async {
-        final pdf = await generatePdf();
+        final pdf = await generatePdf(customer, items);
         await Printing.sharePdf(bytes: pdf, filename: 'invoice.pdf');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Downloading receipt...')),
@@ -279,188 +336,203 @@ class InvoicePage extends StatelessWidget {
     );
   }
 
- Future<Uint8List> generatePdf() async {
-  final pdf = pw.Document();
+  Future<Uint8List> generatePdf(
+      Customer customer, List<InvoiceItem> items) async {
+    final pdf = pw.Document();
 
-  final netTotal = items.fold(
-      0.0, (double sum, item) => sum + item.unitPrice * item.quantity);
-  final vatTotal = items.fold(0.0,
-      (double sum, item) => sum + item.unitPrice * item.quantity * item.vat);
+    final netTotal = items.fold(
+        0.0, (double sum, item) => sum + item.unitPrice * item.quantity);
+    final vatTotal = items.fold(0.0,
+        (double sum, item) => sum + item.unitPrice * item.quantity * item.vat);
 
-  // Load font
-  final fontData =
-      await rootBundle.load('assets/fonts/roboto/Roboto-Regular.ttf');
-  final ttf = pw.Font.ttf(fontData.buffer.asByteData());
+    // Load font
+    final fontData =
+        await rootBundle.load('assets/fonts/roboto/Roboto-Regular.ttf');
+    final ttf = pw.Font.ttf(fontData.buffer.asByteData());
 
-  pdf.addPage(
-    pw.Page(
-      build: (context) => pw.Column(
-        crossAxisAlignment: pw.CrossAxisAlignment.start,
-        children: [
-          pw.Container(
-            margin: pw.EdgeInsets.all(16),
-            padding: pw.EdgeInsets.all(16),
-            decoration: pw.BoxDecoration(
-              border: pw.Border.all(color: PdfColors.grey400),
+    pdf.addPage(
+      pw.Page(
+        build: (context) => pw.Column(
+          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          children: [
+            pw.Container(
+              margin: pw.EdgeInsets.all(16),
+              padding: pw.EdgeInsets.all(16),
+              decoration: pw.BoxDecoration(
+                border: pw.Border.all(color: PdfColors.grey400),
+              ),
+              child: pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  pw.Text(
+                    'Foodie',
+                    style: pw.TextStyle(
+                      font: ttf,
+                      fontSize: 40,
+                      color: PdfColor.fromInt(0xFF6A6A6A),
+                      fontStyle: pw.FontStyle.italic, // Italic style
+                    ),
+                  ),
+                  pw.SizedBox(height: 10),
+                  pw.Container(
+                    padding: pw.EdgeInsets.all(12),
+                    decoration: pw.BoxDecoration(
+                      border: pw.Border.all(color: PdfColors.grey),
+                    ),
+                    child: pw.Column(
+                      crossAxisAlignment: pw.CrossAxisAlignment.start,
+                      children: [
+                        pw.Row(
+                          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                          children: [
+                            pw.Text(
+                              'Invoice Information',
+                              style: pw.TextStyle(
+                                fontSize: 18,
+                                fontWeight: pw.FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        pw.SizedBox(height: 10),
+                        pw.Text(
+                            'Invoice Number: ${invoiceInfo.getInvoiceNumber()}'),
+                        pw.Text(
+                            'Invoice Date: ${Utils.formatDate(invoiceInfo.date)}'),
+                        pw.Text(
+                            'Due Date: ${Utils.formatDate(invoiceInfo.dueDate)}'),
+                        pw.SizedBox(height: 10),
+                        pw.Text(
+                          'Description: ${invoiceInfo.description}',
+                          style: pw.TextStyle(fontStyle: pw.FontStyle.italic),
+                        ),
+                      ],
+                    ),
+                  ),
+                  pw.SizedBox(height: 10),
+                  pw.Container(
+                    padding: pw.EdgeInsets.all(12),
+                    decoration: pw.BoxDecoration(
+                      border: pw.Border.all(color: PdfColors.grey),
+                    ),
+                    child: pw.Column(
+                      crossAxisAlignment: pw.CrossAxisAlignment.start,
+                      children: [
+                        pw.Row(
+                          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                          children: [
+                            pw.Text(
+                              'Items',
+                              style: pw.TextStyle(
+                                fontSize: 18,
+                                fontWeight: pw.FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        pw.SizedBox(height: 10),
+                        pw.Table.fromTextArray(
+                          headers: [
+                            'Description',
+                            'Quantity',
+                            'Unit Price',
+                            'Total'
+                          ],
+                          data: items.map((item) {
+                            final total =
+                                item.unitPrice * item.quantity * (1 + item.vat);
+                            return [
+                              item.description,
+                              item.quantity.toString(),
+                              Utils.formatPrice(item.unitPrice),
+                              Utils.formatPrice(total),
+                            ];
+                          }).toList(),
+                        ),
+                      ],
+                    ),
+                  ),
+                  pw.SizedBox(height: 10),
+                  pw.Container(
+                    padding: pw.EdgeInsets.all(12),
+                    decoration: pw.BoxDecoration(
+                      border: pw.Border.all(color: PdfColors.grey),
+                    ),
+                    child: pw.Column(
+                      crossAxisAlignment: pw.CrossAxisAlignment.start,
+                      children: [
+                        pw.Row(
+                          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                          children: [
+                            pw.Text(
+                              'Total Amount',
+                              style: pw.TextStyle(
+                                fontSize: 18,
+                                fontWeight: pw.FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        pw.SizedBox(height: 10),
+                        pw.Text('Net Total: ${Utils.formatPrice(netTotal)}'),
+                        pw.Divider(),
+                        pw.Text(
+                          'Total Amount Due: ${Utils.formatPrice(netTotal + vatTotal)}',
+                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                  pw.SizedBox(height: 10),
+                  pw.Container(
+                    padding: pw.EdgeInsets.all(12),
+                    decoration: pw.BoxDecoration(
+                      border: pw.Border.all(color: PdfColors.grey),
+                    ),
+                    child: pw.Column(
+                      crossAxisAlignment: pw.CrossAxisAlignment.start,
+                      children: [
+                        pw.Row(
+                          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                          children: [
+                            pw.Text(
+                              'Customer Information',
+                              style: pw.TextStyle(
+                                fontSize: 18,
+                                fontWeight: pw.FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        pw.SizedBox(height: 10),
+                        pw.Text('Customer Name: ${customer.name}'),
+                        pw.Text('Customer Email: ${customer.email}'),
+                        pw.Text('Customer Address: ${customer.address}'),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-            child: pw.Column(
-              crossAxisAlignment: pw.CrossAxisAlignment.start,
-              children: [
-                pw.Text(
-                  'Foodie',
-                  style: pw.TextStyle(
-                    font: ttf,
-                    fontSize: 40,
-                    color: PdfColor.fromInt(0xFF6A6A6A),
-                    fontStyle: pw.FontStyle.italic, // Italic style
-                  ),
-                ),
-                pw.SizedBox(height: 10),
-                pw.Container(
-                  padding: pw.EdgeInsets.all(12),
-                  decoration: pw.BoxDecoration(
-                    border: pw.Border.all(color: PdfColors.grey),
-                  ),
-                  child: pw.Column(
-                    crossAxisAlignment: pw.CrossAxisAlignment.start,
-                    children: [
-                      pw.Row(
-                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                        children: [
-                          pw.Text(
-                            'Invoice Information',
-                            style: pw.TextStyle(
-                              fontSize: 18,
-                              fontWeight: pw.FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      pw.SizedBox(height: 10),
-                      pw.Text('Invoice Number: ${invoiceInfo.getInvoiceNumber()}'),
-                      pw.Text('Invoice Date: ${Utils.formatDate(invoiceInfo.date)}'),
-                      pw.Text('Due Date: ${Utils.formatDate(invoiceInfo.dueDate)}'),
-                      pw.SizedBox(height: 10),
-                      pw.Text(
-                        'Description: ${invoiceInfo.description}',
-                        style: pw.TextStyle(fontStyle: pw.FontStyle.italic),
-                      ),
-                    ],
-                  ),
-                ),
-                pw.SizedBox(height: 10),
-                pw.Container(
-                  padding: pw.EdgeInsets.all(12),
-                  decoration: pw.BoxDecoration(
-                    border: pw.Border.all(color: PdfColors.grey),
-                  ),
-                  child: pw.Column(
-                    crossAxisAlignment: pw.CrossAxisAlignment.start,
-                    children: [
-                      pw.Row(
-                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                        children: [
-                          pw.Text(
-                            'Items',
-                            style: pw.TextStyle(
-                              fontSize: 18,
-                              fontWeight: pw.FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      pw.SizedBox(height: 10),
-                      pw.Table.fromTextArray(
-                        headers: [
-                          'Description',
-                          'Quantity',
-                          'Unit Price',
-                          'Total'
-                        ],
-                        data: items.map((item) {
-                          final total =
-                              item.unitPrice * item.quantity * (1 + item.vat);
-                          return [
-                            item.description,
-                            item.quantity.toString(),
-                            Utils.formatPrice(item.unitPrice),
-                            Utils.formatPrice(total),
-                          ];
-                        }).toList(),
-                      ),
-                    ],
-                  ),
-                ),
-                pw.SizedBox(height: 10),
-                pw.Container(
-                  padding: pw.EdgeInsets.all(12),
-                  decoration: pw.BoxDecoration(
-                    border: pw.Border.all(color: PdfColors.grey),
-                  ),
-                  child: pw.Column(
-                    crossAxisAlignment: pw.CrossAxisAlignment.start,
-                    children: [
-                      pw.Row(
-                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                        children: [
-                          pw.Text(
-                            'Total Amount',
-                            style: pw.TextStyle(
-                              fontSize: 18,
-                              fontWeight: pw.FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      pw.SizedBox(height: 10),
-                      pw.Text('Net Total: ${Utils.formatPrice(netTotal)}'),
-                      pw.Divider(),
-                      pw.Text(
-                        'Total Amount Due: ${Utils.formatPrice(netTotal + vatTotal)}',
-                        style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                ),
-                pw.SizedBox(height: 10),
-                pw.Container(
-                  padding: pw.EdgeInsets.all(12),
-                  decoration: pw.BoxDecoration(
-                    border: pw.Border.all(color: PdfColors.grey),
-                  ),
-                  child: pw.Column(
-                    crossAxisAlignment: pw.CrossAxisAlignment.start,
-                    children: [
-                      pw.Row(
-                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                        children: [
-                          pw.Text(
-                            'Customer Information',
-                            style: pw.TextStyle(
-                              fontSize: 18,
-                              fontWeight: pw.FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      pw.SizedBox(height: 10),
-                      pw.Text('Customer Name: ${customer.name}'),
-                      pw.Text('Customer Email: ${customer.email}'),
-                      pw.Text('Customer Address: ${customer.address}'),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
+    );
 
-  return pdf.save();
+    return pdf.save();
+  }
 }
 
+class Utils {
+  static String formatDate(DateTime date) {
+    final DateFormat formatter = DateFormat('yyyy-MM-dd');
+    return formatter.format(date);
+  }
+
+  static String formatPrice(double price) {
+    final NumberFormat formatter = NumberFormat.currency(symbol: '\$');
+    return formatter.format(price);
+  }
 }
 
 class Customer {
@@ -497,6 +569,7 @@ class InvoiceItem {
   final int quantity;
   final double vat;
   final double unitPrice;
+  final String imageUrl;
 
   InvoiceItem({
     required this.description,
@@ -504,7 +577,42 @@ class InvoiceItem {
     required this.quantity,
     required this.vat,
     required this.unitPrice,
+    required this.imageUrl,
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'description': description,
+      'date': date.toIso8601String(),
+      'quantity': quantity,
+      'vat': vat,
+      'unitPrice': unitPrice,
+      'imageUrl': imageUrl,
+    };
+  }
+
+  factory InvoiceItem.fromJson(Map<String, dynamic> json) {
+    return InvoiceItem(
+      description: json['description'],
+      date: DateTime.parse(json['date']),
+      quantity: json['quantity'],
+      vat: json['vat'],
+      unitPrice: json['unitPrice'],
+      imageUrl: json['imageUrl'],
+    );
+  }
+
+  factory InvoiceItem.fromString(String data) {
+    final parts = data.split('#');
+    return InvoiceItem(
+      description: parts[0],
+      date: DateTime.now(), // Update as needed to parse date correctly
+      quantity: int.parse(parts[3]),
+      vat: 0.15, // Default VAT rate, update as needed
+      unitPrice: double.parse(parts[1]),
+      imageUrl: parts[2],
+    );
+  }
 }
 
 class Supplier {
