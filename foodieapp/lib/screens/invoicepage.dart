@@ -1,8 +1,10 @@
-
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:intl/intl.dart';
-
-
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 
 class Utils {
   static String formatPrice(double price) => '\$ ${price.toStringAsFixed(2)}';
@@ -21,7 +23,6 @@ class InvoicePage extends StatelessWidget {
     // Add more items as needed...
   ];
 
-  // InvoiceInfo class with a method to generate invoice number dynamically
   final InvoiceInfo invoiceInfo = InvoiceInfo(
     description: 'First Order Invoice',
     date: DateTime.now(),
@@ -36,6 +37,7 @@ class InvoicePage extends StatelessWidget {
 
   final Customer customer = Customer(
     name: 'Google',
+    email: 'contact@google.com',
     address: 'Mountain View, California, United States',
   );
 
@@ -45,31 +47,45 @@ class InvoicePage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Invoice'),
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          margin: EdgeInsets.all(16),
-          padding: EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            border: Border.all(
-              color: Colors.grey[400]!,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Container(
+            margin: EdgeInsets.all(16),
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              border: Border.all(
+                color: Colors.grey[400]!,
+              ),
             ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(height: 10),
-              buildInfoCard(),
-              SizedBox(height: 10),
-              buildItemsTable(),
-              SizedBox(height: 10),
-              buildTotal(),
-              SizedBox(height: 10),
-              buildContactInfo(),
-              SizedBox(height: 10),
-              buildDownloadButton(context),
-              SizedBox(height: 10),
-            ],
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Center(
+                  child: Text(
+                    'Foodie',
+                    style: TextStyle(
+                      fontFamily: 'Roboto',
+                      fontSize: 40,
+                      fontWeight: FontWeight.w400,
+                      height: 1,
+                      color: Color(0xFF6A6A6A),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                buildInfoCard(),
+                SizedBox(height: 10),
+                buildItemsTable(),
+                SizedBox(height: 10),
+                buildTotal(),
+                SizedBox(height: 10),
+                buildContactInfo(),
+                SizedBox(height: 10),
+                buildDownloadButton(context),
+                SizedBox(height: 10),
+              ],
+            ),
           ),
         ),
       ),
@@ -95,7 +111,7 @@ class InvoicePage extends StatelessWidget {
               ],
             ),
             SizedBox(height: 10),
-            Text('Invoice Number: ${invoiceInfo.getInvoiceNumber()}'), // Dynamically fetch invoice number
+            Text('Invoice Number: ${invoiceInfo.getInvoiceNumber()}'),
             Text('Invoice Date: ${Utils.formatDate(invoiceInfo.date)}'),
             Text('Due Date: ${Utils.formatDate(invoiceInfo.dueDate)}'),
             SizedBox(height: 10),
@@ -128,21 +144,28 @@ class InvoicePage extends StatelessWidget {
               ],
             ),
             SizedBox(height: 10),
-            DataTable(
-              columns: [
-                DataColumn(label: Text('Description')),
-                DataColumn(label: Text('Quantity')),
-                DataColumn(label: Text('Unit Price')),
-                DataColumn(label: Text('Total')),
-              ],
-              rows: items.map((item) => DataRow(
-                cells: [
-                  DataCell(Text(item.description)),
-                  DataCell(Text(item.quantity.toString())),
-                  DataCell(Text(Utils.formatPrice(item.unitPrice))),
-                  DataCell(Text(Utils.formatPrice(item.unitPrice * item.quantity * (1 + item.vat)))),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: DataTable(
+                columns: [
+                  DataColumn(label: Text('Description')),
+                  DataColumn(label: Text('Quantity')),
+                  DataColumn(label: Text('Unit Price')),
+                  DataColumn(label: Text('Total')),
                 ],
-              )).toList(),
+                rows: items
+                    .map((item) => DataRow(
+                          cells: [
+                            DataCell(Text(item.description)),
+                            DataCell(Text(item.quantity.toString())),
+                            DataCell(Text(Utils.formatPrice(item.unitPrice))),
+                            DataCell(Text(Utils.formatPrice(item.unitPrice *
+                                item.quantity *
+                                (1 + item.vat)))),
+                          ],
+                        ))
+                    .toList(),
+              ),
             ),
           ],
         ),
@@ -201,22 +224,41 @@ class InvoicePage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Contact Information',
+                  'Customer Information',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 Icon(Icons.contact_mail, color: Colors.red),
               ],
             ),
             SizedBox(height: 10),
-            Text('Company/Organization: ${supplier.name}'),
-            Text('Address: ${supplier.address}'),
-            Text('Email: ${supplier.paymentInfo}'),
-            SizedBox(height: 10),
-            Text(
-              'Customer: ${customer.name}',
-              style: TextStyle(fontStyle: FontStyle.italic),
+            Row(
+              children: [
+                Icon(Icons.person, color: Colors.blue),
+                SizedBox(width: 10),
+                Text('Customer Name: ${customer.name}'),
+              ],
             ),
-            Text('Customer Address: ${customer.address}'),
+            SizedBox(height: 10),
+            Row(
+              children: [
+                Icon(Icons.email, color: Colors.blue),
+                SizedBox(width: 10),
+                Text('Customer Email: ${customer.email}'),
+              ],
+            ),
+            SizedBox(height: 10),
+            Row(
+              children: [
+                Icon(Icons.location_on, color: Colors.blue),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'Customer Address: ${customer.address}',
+                    softWrap: true,
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -225,9 +267,9 @@ class InvoicePage extends StatelessWidget {
 
   Widget buildDownloadButton(BuildContext context) {
     return ElevatedButton.icon(
-      onPressed: () {
-        // Implement download functionality here
-        // Example: Generate and download PDF or any other format
+      onPressed: () async {
+        final pdf = await generatePdf();
+        await Printing.sharePdf(bytes: pdf, filename: 'invoice.pdf');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Downloading receipt...')),
         );
@@ -236,14 +278,97 @@ class InvoicePage extends StatelessWidget {
       label: Text('Download Receipt'),
     );
   }
+
+  Future<Uint8List> generatePdf() async {
+    final pdf = pw.Document();
+
+    final netTotal = items.fold(
+        0.0, (double sum, item) => sum + item.unitPrice * item.quantity);
+    final vatTotal = items.fold(0.0,
+        (double sum, item) => sum + item.unitPrice * item.quantity * item.vat);
+
+    // Load font
+    final fontData = await rootBundle.load('assets/fonts/roboto/Roboto-Regular.ttf');
+    final ttf = pw.Font.ttf(fontData.buffer.asByteData());
+    pdf.addPage(
+      pw.Page(
+        build: (context) => pw.Column(
+          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          children: [
+            pw.Text(
+              'Foodie',
+              style: pw.TextStyle(
+                font: ttf,
+                fontSize: 40,
+                color: PdfColors.blue,
+              ),
+            ),
+            pw.SizedBox(height: 10),
+            pw.Text(
+              'Invoice Information',
+              style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
+            ),
+            pw.Text('Invoice Number: ${invoiceInfo.getInvoiceNumber()}'),
+            pw.Text('Invoice Date: ${Utils.formatDate(invoiceInfo.date)}'),
+            pw.Text('Due Date: ${Utils.formatDate(invoiceInfo.dueDate)}'),
+            pw.SizedBox(height: 10),
+            pw.Text(
+              'Description: ${invoiceInfo.description}',
+              style: pw.TextStyle(fontStyle: pw.FontStyle.italic),
+            ),
+            pw.SizedBox(height: 10),
+            pw.Text(
+              'Items',
+              style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
+            ),
+            pw.Table.fromTextArray(
+              headers: ['Description', 'Quantity', 'Unit Price', 'Total'],
+              data: items.map((item) {
+                final total = item.unitPrice * item.quantity * (1 + item.vat);
+                return [
+                  item.description,
+                  item.quantity.toString(),
+                  Utils.formatPrice(item.unitPrice),
+                  Utils.formatPrice(total),
+                ];
+              }).toList(),
+            ),
+            pw.SizedBox(height: 10),
+            pw.Text(
+              'Total Amount',
+              style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
+            ),
+            pw.Text('Net Total: ${Utils.formatPrice(netTotal)}'),
+            pw.Divider(),
+            pw.Text(
+              'Total Amount Due: ${Utils.formatPrice(netTotal + vatTotal)}',
+              style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+            ),
+            pw.SizedBox(height: 10),
+            pw.Text(
+              'Customer Information',
+              style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
+            ),
+            pw.Text('Customer Name: ${customer.name}'),
+            pw.Text('Customer Email: ${customer.email}'),
+            pw.Text('Customer Address: ${customer.address}', softWrap: true),
+          ],
+        ),
+      ),
+    );
+
+    return pdf.save();
+  }
 }
 
 class Customer {
   final String name;
+  final String email;
   final String address;
 
   Customer({
     required this.name,
+    required this.email,
     required this.address,
   });
 }
@@ -259,10 +384,8 @@ class InvoiceInfo {
     required this.dueDate,
   });
 
-  
   String getInvoiceNumber() {
     return 'INV-${DateTime.now().millisecondsSinceEpoch}';
-    //return '${DateTime.now().year}-9999'; 
   }
 }
 

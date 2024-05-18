@@ -41,10 +41,11 @@ dependencies:
   flutter_map: ^4.0.0
   latlong2: ^0.8.2
   geocoding: ^2.0.4
-  pdf: ^3.1.0
   path_provider: ^2.0.1
   open_file: ^3.1.0
   intl: ^0.17.0
+  pdf: ^3.3.0
+  printing: ^5.7.2
   # speech_to_text: ^6.6.1
 
 dev_dependencies:
@@ -75,3 +76,8 @@ flutter:
         - asset: assets/fonts/poppins/Poppins-Regular.ttf
         - asset: assets/fonts/poppins/Poppins-Bold.ttf
           weight: 700
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/roboto/Roboto-Regular.ttf
+        - asset: assets/fonts/roboto/Roboto-Bold.ttf
+          weight: 400
