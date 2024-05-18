@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:foodieapp/screens/productsinfo.dart';
 
-class CardWidget extends StatelessWidget {
+class CardWidget extends StatefulWidget {
   final String imagePath;
   final String title;
   final double rating;
   final String subTitle;
   final String price;
+
   const CardWidget({
     required this.imagePath,
     required this.title,
@@ -16,6 +17,13 @@ class CardWidget extends StatelessWidget {
   });
 
   @override
+  _CardWidgetState createState() => _CardWidgetState();
+}
+
+class _CardWidgetState extends State<CardWidget> {
+  bool isFavorite = false;
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
@@ -23,18 +31,18 @@ class CardWidget extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) => ProductInfoPage(
-                imagePath: imagePath,
-                title: title,
-                rating: rating,
-                subTitle: subTitle,
-                price: price),
+              imagePath: widget.imagePath,
+              title: widget.title,
+              rating: widget.rating,
+              subTitle: widget.subTitle,
+              price: widget.price,
+            ),
           ),
         );
       },
       child: Container(
         width: 170,
-        // height: 220,
-
+        height: 260,
         padding: EdgeInsets.only(right: 14, bottom: 10),
         margin: EdgeInsets.only(right: 14),
         decoration: BoxDecoration(
@@ -58,8 +66,8 @@ class CardWidget extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 image: DecorationImage(
-                  image: NetworkImage(imagePath),
-                  fit: BoxFit.cover,
+                  image: NetworkImage(widget.imagePath),
+                  fit: BoxFit.fitWidth,
                 ),
               ),
             ),
@@ -70,7 +78,7 @@ class CardWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    title,
+                    widget.title,
                     style: TextStyle(
                       fontFamily: 'Roboto',
                       fontSize: 16,
@@ -80,9 +88,9 @@ class CardWidget extends StatelessWidget {
                   ),
                   SizedBox(
                     height: 1,
-                  ), // Maintain a small space between title and subtitle
+                  ),
                   Text(
-                    subTitle,
+                    widget.subTitle,
                     style: TextStyle(
                       fontFamily: 'Roboto',
                       fontSize: 16,
@@ -93,21 +101,25 @@ class CardWidget extends StatelessWidget {
                 ],
               ),
             ),
+            Spacer(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  margin: EdgeInsets.only(left: 10, top: 6),
+                  margin: EdgeInsets.only(left: 10, bottom: 0),
                   child: Row(
                     children: [
-                      Icon(
-                        Icons.star,
-                        size: 16,
-                        color: Color(0xFFFF9633),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 5.0),
+                        child: Icon(
+                          Icons.star,
+                          size: 16,
+                          color: Color(0xFFFF9633),
+                        ),
                       ),
                       SizedBox(width: 4),
                       Text(
-                        rating.toString(),
+                        widget.rating.toString(),
                         style: TextStyle(
                           fontFamily: 'Roboto',
                           fontSize: 16,
@@ -118,13 +130,19 @@ class CardWidget extends StatelessWidget {
                     ],
                   ),
                 ),
-                Container(
-                  margin: EdgeInsets.only(right: 16, top: 6),
-                  child: Icon(
-                    Icons.favorite_outline_outlined,
+                IconButton(
+                  icon: Icon(
+                    isFavorite
+                        ? Icons.favorite
+                        : Icons.favorite_outline_outlined,
+                    color: isFavorite ? Colors.red : Color(0xFF3C2F2F),
                     size: 24,
-                    color: Color(0xFF3C2F2F),
                   ),
+                  onPressed: () {
+                    setState(() {
+                      isFavorite = !isFavorite;
+                    });
+                  },
                 ),
               ],
             ),
