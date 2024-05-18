@@ -411,7 +411,7 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
                     List<String>? cartItems =
                         prefs.getStringList('cart_items') ?? [];
                     String itemInfo =
-                        '${widget.title}:${widget.price}:${widget.imagePath}';
+                        '${widget.title}#${widget.price}#${widget.imagePath}';
                     cartItems.add(itemInfo);
                     await prefs.setStringList('cart_items', cartItems);
                     Navigator.push(

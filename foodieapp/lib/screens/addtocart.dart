@@ -35,7 +35,8 @@ class _AddToCartState extends State<AddToCart> {
       List<String>? items = _prefs.getStringList('cart_items');
       if (items != null) {
         cartItems = items.map((item) {
-          var parts = item.split(':');
+          var parts = item.split('#');
+
           return {
             'name': parts[0],
             'imageUrl': parts[2], // Added imageUrl
@@ -52,7 +53,7 @@ class _AddToCartState extends State<AddToCart> {
   Future<void> _saveCartItems() async {
     List<String> items = cartItems
         .map((item) =>
-            '${item['name']}:${item['price']}:${item['imageUrl']}:${item['quantity']}')
+            '${item['name']}#${item['price']}#${item['imageUrl']}#${item['quantity']}')
         .toList();
     await _prefs.setStringList('cart_items', items);
   }
@@ -123,6 +124,9 @@ class _AddToCartState extends State<AddToCart> {
                         width: 50,
                         height: 50,
                         fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(Icons.error);
+                        },
                       ),
                       title: Text(cartItems[index]['name']),
                       subtitle: Column(
@@ -293,6 +297,12 @@ class _AddToCartState extends State<AddToCart> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.red),
+                    foregroundColor:
+                        MaterialStateProperty.all<Color>(Colors.white),
+                  ),
                   onPressed: () async {
                     await _clearCart();
                   },
@@ -300,6 +310,12 @@ class _AddToCartState extends State<AddToCart> {
                 ),
                 SizedBox(width: 20),
                 ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.green),
+                    foregroundColor:
+                        MaterialStateProperty.all<Color>(Colors.white),
+                  ),
                   onPressed: () async {
                     await _orderNow();
                   },
