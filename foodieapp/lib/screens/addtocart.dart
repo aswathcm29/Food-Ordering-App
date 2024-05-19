@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:foodieapp/screens/checkoutview.dart';
+import 'package:foodieapp/screens/loginscreen.dart';
+import 'package:foodieapp/screens/signupscreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:motion_toast/motion_toast.dart';
 
@@ -74,38 +76,74 @@ class _AddToCartState extends State<AddToCart> {
     return totalPrice;
   }
 
-  Future<void> _orderNow() async {
-    final checkAuth = _prefs.getString("uid");
+  
+Future<void> _orderNow() async {
+  final checkAuth = _prefs.getString("uid");
 
-    if (checkAuth == "" || checkAuth == null) {
-      MotionToast toast = MotionToast(
-        primaryColor: Colors.red,
-        animationType: AnimationType.fromTop,
-        position: MotionToastPosition.top,
-        description: Center(
-          child: const Text(
+  if (checkAuth == "" || checkAuth == null) {
+    MotionToast toast = MotionToast(
+      primaryColor: Colors.red,
+      animationType: AnimationType.fromTop,
+      position: MotionToastPosition.top,
+      description: Column(
+        children: [
+          const Text(
             'Login First',
-            style: TextStyle(fontSize: 12),
+            style: TextStyle(fontSize: 20),
           ),
-        ),
-        dismissable: true,
-        displaySideBar: false,
-      );
-      toast.show(context);
-      print("Login First");
-      return;
-    } else {
-      print('Order placed! Cart items: $cartItems');
-    }
-
-    double totalPrice = _calculateTotalPrice();
-    // await _clearCart();
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => CheckoutView(totalPrice: totalPrice)),
+          SizedBox(height: 10,),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginScreen()),
+                  );
+                },
+                child: const Text('Login'),
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.blue,
+                  onPrimary: Colors.white,
+                ),
+              ),
+              SizedBox(width: 10),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SignUpScreen()), // Assuming you have a SignUpScreen
+                  );
+                },
+                child: const Text('Sign Up'),
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.green,
+                  onPrimary: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+      dismissable: true,
+      displaySideBar: false,
     );
+    toast.show(context);
+    print("Login First");
+    return;
+  } else {
+    print('Order placed! Cart items: $cartItems');
   }
+
+  double totalPrice = _calculateTotalPrice();
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => CheckoutView(totalPrice: totalPrice)),
+  );
+}
+
+
 
   @override
   Widget build(BuildContext context) {
