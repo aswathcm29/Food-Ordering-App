@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -6,6 +8,7 @@ import 'color_extension.dart';
 import 'invoicepage.dart';
 import 'round_button.dart';
 import 'change_address_view.dart';
+import 'dart:math';
 
 class CheckoutView extends StatefulWidget {
   final double totalPrice;
@@ -77,6 +80,73 @@ class _CheckoutViewState extends State<CheckoutView> {
         deliveryName = "Error loading name";
         deliveryPhone = "Error loading contact";
       });
+    }
+  }
+
+  Future<void> _clearCart() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    await prefs.remove('cart_items');
+  }
+
+  Future<void> _sendOrder() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? uid = prefs.getString('uid');
+      List<String>? cartItems = prefs.getStringList('cart_items');
+
+      if (uid != null && cartItems != null) {
+        // Generate a unique invoice number
+        String invoiceNumber =
+            'INV-${DateTime.now().millisecondsSinceEpoch}-${Random().nextInt(1000)}';
+
+        // Create the order data
+        Map<String, dynamic> orderData = {
+          'Order By': uid,
+          'date': DateTime.now(),
+          'invoiceNumber': invoiceNumber,
+          'products': cartItems,
+          'totalQuantity Price': widget.totalPrice,
+          'deliveryCost': 2,
+          'discount': 4,
+          'total(after discount and deliverycost)': widget.totalPrice + 2 - 4,
+          'deliveryAddress': deliveryAddress,
+          'deliveryEmail': deliveryEmail,
+          'deliveryName': deliveryName,
+          'deliveryPhone': deliveryPhone,
+          'paymentMethod': paymentArr[selectMethod]['name'],
+          'status': "pending"
+        };
+
+        // Store the order in Firestore
+        await FirebaseFirestore.instance.collection('Order').add(orderData);
+        await _clearCart();
+
+        // Show success message and navigate to invoice page
+
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => InvoicePage(
+        //       deliveryName: deliveryName,
+        //       deliveryEmail: deliveryEmail,
+        //       deliveryAddress: deliveryAddress,
+        //       deliveryCost: '2',
+        //       deliveryPhone: deliveryPhone,
+        //     ),
+        //   ),
+        // );
+      } else {
+        // Handle error case
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('User ID or cart items not found')),
+        );
+      }
+    } catch (e) {
+      print("Error sending order: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error sending order: $e')),
+      );
     }
   }
 
@@ -413,7 +483,8 @@ class _CheckoutViewState extends State<CheckoutView> {
                     const SizedBox(height: 20),
                     RoundButton(
                       title: "Send Order",
-                      onPressed: () {
+                      onPressed: () async {
+                        await _sendOrder();
                         showModalBottomSheet(
                           context: context,
                           backgroundColor: Colors.transparent,

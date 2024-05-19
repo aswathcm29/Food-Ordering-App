@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:foodieapp/screens/addtocart.dart';
+import 'package:foodieapp/screens/orderdetails.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:foodieapp/screens/loginscreen.dart';
 import 'package:foodieapp/widgets/cardwidget.dart';
@@ -24,6 +25,12 @@ class _MyHomePageState extends State<MyHomePage> {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => AddToCart()),
+      );
+    }
+    if (_selectedIndex == 2) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => OrderDetails()),
       );
     }
   }
@@ -416,7 +423,10 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: Icon(Icons.shopping_cart),
             label: 'Cart',
           ),
-          // Add more bottom navigation items as needed
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add_card),
+            label: 'Order Details',
+          ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.green[800],
