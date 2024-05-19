@@ -102,11 +102,11 @@ class _InvoicePageState extends State<InvoicePage> {
                 date: DateTime.now(),
                 dueDate: DateTime.now().add(Duration(days: 7)),
               );
-              final supplier = Supplier(
-                name: 'Foodie-Food Order',
-                address: '',
-                paymentInfo: 'Cash On Delivery',
-              );
+              // final supplier = Supplier(
+              //   name: 'Foodie-Food Order',
+              //   address: '',
+              //   paymentInfo: 'Cash On Delivery',
+              // );
 
               return SingleChildScrollView(
                 child: Container(

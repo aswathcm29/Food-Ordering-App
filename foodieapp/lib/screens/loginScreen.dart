@@ -112,18 +112,22 @@ class _LoginScreenState extends State<LoginScreen> {
                 color: Colors.white,
               ),
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Image.asset(
-                      'assets/images/star.png',
-                      height: 45,
-                      width: 45,
-                    ),
-                  ],
-                ),
-              ),
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Image.asset(
+                        'assets/images/gif4.gif',
+                        height: 45,
+                        width: 45,
+                      ),
+                      Image.asset(
+                        'assets/images/star.png',
+                        height: 45,
+                        width: 45,
+                      ),
+                    ],
+                  )),
             ),
             SizedBox(height: 20),
             Text(
