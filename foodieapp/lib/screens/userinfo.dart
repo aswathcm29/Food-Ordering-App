@@ -6,9 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:foodieapp/screens/loginscreen.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:image_picker_for_web/image_picker_for_web.dart';
 import 'dart:io';
-import 'dart:html' as html;
 
 class userinfo extends StatefulWidget {
   final String email;
