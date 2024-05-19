@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:foodieapp/screens/loginscreen.dart';
 import 'package:foodieapp/widgets/cardwidget.dart';
 import 'package:foodieapp/widgets/framebutton.dart';
+import 'package:motion_toast/motion_toast.dart'; // Add this import
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -19,12 +20,6 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _selectedIndex = index;
     });
-    if (_selectedIndex == 0) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => MyHomePage()),
-      );
-    }
     if (_selectedIndex == 1) {
       Navigator.push(
         context,
@@ -38,7 +33,6 @@ class _MyHomePageState extends State<MyHomePage> {
   String? _profileImageUrl;
 
   List<Map<String, dynamic>> cardData = [];
-
   List<Map<String, dynamic>> filteredData = [];
 
   @override
@@ -105,6 +99,29 @@ class _MyHomePageState extends State<MyHomePage> {
       _isLoggedIn = false;
       _profileImageUrl = null;
     });
+
+    // Show logout success notification
+    MotionToast.success(
+      title: Text('Logout Successful'),
+      description: Text('You have logged out successfully'),
+      animationType: AnimationType.fromTop,
+      position: MotionToastPosition.top,
+      width: 300,
+      height: 80,
+    ).show(context);
+  }
+
+  void _onCategorySelected(String category) {
+    if (category == 'All') {
+      setState(() {
+        filteredData = cardData;
+      });
+    } else {
+      setState(() {
+        filteredData =
+            cardData.where((item) => item['category'] == category).toList();
+      });
+    }
   }
 
   @override
@@ -147,8 +164,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                   leading: Icon(Icons.shopping_cart),
                                   title: Text('View Cart'),
                                   onTap: () {
-                                    // Navigate to cart screen
-                                    Navigator.pop(context); // Close the menu
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => AddToCart()),
+                                    );
                                   },
                                 ),
                               ),
@@ -157,8 +177,78 @@ class _MyHomePageState extends State<MyHomePage> {
                                   leading: Icon(Icons.logout),
                                   title: Text('Logout'),
                                   onTap: () {
-                                    _logout();
-                                    Navigator.pop(context); // Close the menu
+                                    // Show the confirmation dialog
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return Dialog(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                          ),
+                                          elevation: 0,
+                                          backgroundColor: Colors.transparent,
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                              color: Colors.white,
+                                            ),
+                                            padding: EdgeInsets.all(20.0),
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: <Widget>[
+                                                Text(
+                                                  'Confirm Logout',
+                                                  style: TextStyle(
+                                                    fontSize: 20.0,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                SizedBox(height: 20.0),
+                                                Text(
+                                                  'Are you sure you want to logout?',
+                                                  style:
+                                                      TextStyle(fontSize: 16.0),
+                                                ),
+                                                SizedBox(height: 20.0),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.end,
+                                                  children: <Widget>[
+                                                    TextButton(
+                                                      child: Text(
+                                                        'Cancel',
+                                                        style: TextStyle(
+                                                            color: Colors.grey),
+                                                      ),
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop(); // Close the dialog
+                                                      },
+                                                    ),
+                                                    TextButton(
+                                                      child: Text(
+                                                        'Logout',
+                                                        style: TextStyle(
+                                                            color: Colors.red),
+                                                      ),
+                                                      onPressed: () {
+                                                        _logout();
+                                                        Navigator.of(context)
+                                                            .pop(); // Close the dialog
+                                                        Navigator.pop(
+                                                            context); // Close the menu
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    );
                                   },
                                 ),
                               ),
@@ -273,7 +363,9 @@ class _MyHomePageState extends State<MyHomePage> {
               Positioned(
                 top: 240,
                 left: 25,
-                child: FrameWithButtons(),
+                child: FrameWithButtons(
+                  onCategorySelected: _onCategorySelected,
+                ),
               ),
               Positioned(
                 top: 320,
@@ -324,10 +416,7 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: Icon(Icons.shopping_cart),
             label: 'Cart',
           ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(Icons.person),
-          //   label: 'Profile',
-          // ),
+          // Add more bottom navigation items as needed
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.green[800],

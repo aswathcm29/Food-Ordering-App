@@ -4,33 +4,33 @@ class CustomButton extends StatelessWidget {
   final String text;
   final Color color;
   final Color textColor;
-  final List<BoxShadow>? boxShadow;
+  final VoidCallback onTap; // Callback for tap action
 
   const CustomButton({
     required this.text,
     required this.color,
     required this.textColor,
-    this.boxShadow,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 90,
-      height: 50,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
         color: color,
-        boxShadow: boxShadow,
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: Center(
-        child: Text(
-          text,
-          style: TextStyle(
-            fontFamily: 'Inter',
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: textColor,
+      child: TextButton(
+        onPressed: onTap, // Assign onTap callback to onPressed of TextButton
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Text(
+            text,
+            style: TextStyle(
+              color: textColor,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ),
       ),

@@ -176,10 +176,7 @@ class _InvoicePageState extends State<InvoicePage> {
             Text('Invoice Date: ${Utils.formatDate(invoiceInfo.date)}'),
             Text('Due Date: ${Utils.formatDate(invoiceInfo.dueDate)}'),
             SizedBox(height: 10),
-            Text(
-              'Description: ${invoiceInfo.description}',
-              style: TextStyle(fontStyle: FontStyle.italic),
-            ),
+            
           ],
         ),
       ),

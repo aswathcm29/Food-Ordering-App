@@ -7,6 +7,7 @@ import 'package:sign_in_button/sign_in_button.dart';
 import 'package:foodieapp/screens/myhomepage.dart';
 import 'package:foodieapp/screens/signupscreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:motion_toast/motion_toast.dart'; // Add this import
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -23,33 +24,42 @@ class _LoginScreenState extends State<LoginScreen> {
     await prefs.setString('uid', uid);
   }
 
-  void LoginHandler() async {
-    String email = _emailController.text;
-    String password = _passwordController.text;
+ void LoginHandler() async {
+  String email = _emailController.text;
+  String password = _passwordController.text;
 
-    print('Email: $email');
-    print('Password: $password');
-    try {
-      final loginUser = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
+  print('Email: $email');
+  print('Password: $password');
+  try {
+    final loginUser = await FirebaseAuth.instance
+        .signInWithEmailAndPassword(email: email, password: password);
 
-      if (loginUser.user != null) {
-        print('User logged in');
-        print(loginUser);
+    if (loginUser.user != null) {
+      print('User logged in');
+      print(loginUser);
 
-        // Store UID
-        await _storeUid(loginUser.user!.uid);
+      // Store UID
+      await _storeUid(loginUser.user!.uid);
 
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => MyHomePage()));
-      } else {
-        print('User not logged in');
-      }
-    } catch (e) {
-      print(e);
+      // Show login success notification with email
+      MotionToast.success(
+        title: Text('Login Successful'),
+        description: Text('Logged in as $email'),
+        animationType: AnimationType.fromTop,
+        position: MotionToastPosition.top,
+        width: 300,
+        height: 80,
+      ).show(context);
+
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => MyHomePage()));
+    } else {
+      print('User not logged in');
     }
+  } catch (e) {
+    print(e);
   }
-
+}
   Future<void> _signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -114,13 +124,9 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Image.asset(
-                        'assets/images/gif4.gif',
-                        height: 45,
-                        width: 45,
-                      ),
+                      
                       Image.asset(
                         'assets/images/star.png',
                         height: 45,
