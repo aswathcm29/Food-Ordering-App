@@ -1,13 +1,13 @@
-import 'dart:math';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:foodieapp/screens/loginscreen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:foodieapp/screens/addtocart.dart';
 import 'package:foodieapp/screens/orderdetails.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:foodieapp/screens/loginscreen.dart';
+//import 'package:foodieapp/screens/loginscreen.dart';
 import 'package:foodieapp/widgets/cardwidget.dart';
 import 'package:foodieapp/widgets/framebutton.dart';
-import 'package:motion_toast/motion_toast.dart'; // Add this import
+import 'package:motion_toast/motion_toast.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -99,24 +99,31 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _logout() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove('uid');
-    setState(() {
-      _isLoggedIn = false;
-      _profileImageUrl = null;
-    });
+ void _logout() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.remove('uid');
+  setState(() {
+    _isLoggedIn = false;
+    _profileImageUrl = null;
+  });
 
-    // Show logout success notification
-    MotionToast.success(
-      title: Text('Logout Successful'),
-      description: Text('You have logged out successfully'),
-      animationType: AnimationType.fromTop,
-      position: MotionToastPosition.top,
-      width: 300,
-      height: 80,
-    ).show(context);
-  }
+  // Show logout success notification
+  MotionToast.success(
+    title: Text('Logout Successful'),
+    description: Text('You have logged out successfully'),
+    animationType: AnimationType.fromTop,
+    position: MotionToastPosition.top,
+    width: 300,
+    height: 80,
+  ).show(context);
+
+  // Reload the page
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(builder: (context) => MyHomePage()),
+  );
+}
+
 
   void _onCategorySelected(String category) {
     setState(() {
@@ -178,32 +185,36 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget _buildPopupMenu(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        _showSortMenu(context);
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.only(
-            topRight: Radius.circular(10.0), // Rounded border on top right
-          ),
-          border: Border(
-            top: BorderSide(
-                width: 1.0, color: Colors.grey[300]!), // Border from top right
-            right: BorderSide(
-                width: 1.0, color: Colors.grey[300]!), // Border from top right
+  Future<void> _showUserMenu(BuildContext context) async {
+    String? result = await showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(100, 100, 0, 100),
+      items: [
+        PopupMenuItem<String>(
+          value: 'cart',
+          child: ListTile(
+            leading: Icon(Icons.shopping_cart),
+            title: Text('Cart'),
           ),
         ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
-          child: Icon(
-            Icons.tune_rounded,
-            color: Color(0xFF19C08E),
+        PopupMenuItem<String>(
+          value: 'logout',
+          child: ListTile(
+            leading: Icon(Icons.logout),
+            title: Text('Logout'),
           ),
         ),
-      ),
+      ],
     );
+
+    if (result == 'cart') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => AddToCart()),
+      );
+    } else if (result == 'logout') {
+      _logout(); // Implement your logout functionality
+    }
   }
 
   @override
@@ -213,6 +224,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 50),
               Row(
@@ -229,28 +241,28 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ),
                   _isLoggedIn
-                      ? InkWell(
-                          onTap: () {
-                            _showSortMenu(context);
-                          },
-                          child: CircleAvatar(
-                            backgroundImage: NetworkImage(_profileImageUrl!),
-                            radius: 30,
-                          ),
-                        )
-                      : InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => LoginScreen()),
-                            );
-                          },
-                          child: Icon(
-                            Icons.login_rounded,
-                            size: 40,
-                          ),
-                        ),
+    ? InkWell(
+        onTap: () {
+          _showUserMenu(context);
+        },
+        child: CircleAvatar(
+          backgroundImage: NetworkImage(_profileImageUrl!),
+          radius: 30,
+        ),
+      )
+    : InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => LoginScreen()),
+          );
+        },
+        child: Icon(
+          Icons.login_rounded,
+          size: 40,
+        ),
+      )
+
                 ],
               ),
               SizedBox(height: 10),
@@ -355,8 +367,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         CardWidget(
                           imagePath: filteredData[firstIndex]['imagePath'],
                           title: filteredData[firstIndex]['title'],
-                          subTitle: filteredData[firstIndex]['subTitle'],
-                          rating: filteredData[firstIndex]['rating'],
+                          subTitle: filteredData[firstIndex]['subTitle'], rating: filteredData[firstIndex]['rating'],
                           price: filteredData[firstIndex]['price'],
                         ),
                         SizedBox(width: 4),
@@ -399,7 +410,6 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
 
 
 
