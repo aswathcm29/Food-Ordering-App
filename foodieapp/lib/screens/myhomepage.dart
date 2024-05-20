@@ -35,8 +35,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-
-
   final TextEditingController _searchController = TextEditingController();
   bool _isLoggedIn = false;
   String? _profileImageUrl;
@@ -126,11 +124,10 @@ class _MyHomePageState extends State<MyHomePage> {
         filteredData = cardData;
       } else {
         filteredData = cardData
-            .where((item) =>
-                item['title']
-                    .toString()
-                    .toLowerCase()
-                    .contains(category.toLowerCase()))
+            .where((item) => item['title']
+                .toString()
+                .toLowerCase()
+                .contains(category.toLowerCase()))
             .toList();
       }
     });
@@ -148,122 +145,117 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  
-void _showSortMenu(BuildContext context) {
-  showMenu(
-    context: context,
-    position: RelativeRect.fromLTRB(1000, 220, 30, 0),
-    items: [
-      PopupMenuItem(
-        child: ListTile(
-          leading: Icon(Icons.sort_by_alpha, color: Color(0xFF19C08E)),
-          title: Text('Sort by Title', style: TextStyle(color: Colors.black87)),
-          onTap: () {
-            Navigator.pop(context); // Close the menu
-            sortByTitle();
-          },
+  void _showSortMenu(BuildContext context) {
+    showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(1000, 220, 30, 0),
+      items: [
+        PopupMenuItem(
+          child: ListTile(
+            leading: Icon(Icons.sort_by_alpha, color: Color(0xFF19C08E)),
+            title:
+                Text('Sort by Title', style: TextStyle(color: Colors.black87)),
+            onTap: () {
+              Navigator.pop(context); // Close the menu
+              sortByTitle();
+            },
+          ),
+        ),
+        PopupMenuItem(
+          child: ListTile(
+            leading: Icon(Icons.attach_money, color: Color(0xFF19C08E)),
+            title:
+                Text('Sort by Price', style: TextStyle(color: Colors.black87)),
+            onTap: () {
+              Navigator.pop(context); // Close the menu
+              sortByPrice();
+            },
+          ),
+        ),
+      ],
+      color: Colors.white, // Background color of the popup menu
+      elevation: 8, // Shadow elevation of the popup menu
+    );
+  }
+
+  Widget _buildPopupMenu(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        _showSortMenu(context);
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.only(
+            topRight: Radius.circular(10.0), // Rounded border on top right
+          ),
+          border: Border(
+            top: BorderSide(
+                width: 1.0, color: Colors.grey[300]!), // Border from top right
+            right: BorderSide(
+                width: 1.0, color: Colors.grey[300]!), // Border from top right
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+          child: Icon(
+            Icons.tune_rounded,
+            color: Color(0xFF19C08E),
+          ),
         ),
       ),
-      PopupMenuItem(
-        child: ListTile(
-          leading: Icon(Icons.attach_money, color: Color(0xFF19C08E)),
-          title: Text('Sort by Price', style: TextStyle(color: Colors.black87)),
-          onTap: () {
-            Navigator.pop(context); // Close the menu
-            sortByPrice();
-          },
-        ),
-      ),
-    ],
-    color: Colors.white, // Background color of the popup menu
-    elevation: 8, // Shadow elevation of the popup menu
-  );
-}
-
-Widget _buildPopupMenu(BuildContext context) {
-  return GestureDetector(
-    onTap: () {
-      _showSortMenu(context);
-    },
-    child: Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(
-          topRight: Radius.circular(10.0), // Rounded border on top right
-        ),
-        border: Border(
-          top: BorderSide(width: 1.0, color: Colors.grey[300]!), // Border from top right
-          right: BorderSide(width: 1.0, color: Colors.grey[300]!), // Border from top right
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
-        child: Icon(
-          Icons.tune_rounded,
-          color: Color(0xFF19C08E),
-        ),
-      ),
-    ),
-  );
-}
-
-
-
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Container(
-          width: double.infinity,
-          height: min(7000, 5000),
-          decoration: BoxDecoration(border: Border.all(color: Colors.green)),
-          child: Stack(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
             children: [
-              Positioned(
-                top: 50,
-                left: 19,
-                child: Text(
-                  'Foodie',
-                  style: TextStyle(
-                    fontFamily: 'Lobster',
-                    fontSize: 45,
-                    fontWeight: FontWeight.w400,
-                    height: 60.61 / 45,
-                    color: Color(0xFF3C2F2F),
+              SizedBox(height: 50),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Foodie',
+                    style: TextStyle(
+                      fontFamily: 'Lobster',
+                      fontSize: 45,
+                      fontWeight: FontWeight.w400,
+                      height: 60.61 / 45,
+                      color: Color(0xFF3C2F2F),
+                    ),
                   ),
-                ),
-              ),
-              Positioned(
-                top: 60,
-                right: 19,
-                child: _isLoggedIn
-                    ? InkWell(
-                        onTap: () {
-                          _showSortMenu(context);
-                        },
-                        child: CircleAvatar(
-                          backgroundImage: NetworkImage(_profileImageUrl!),
-                          radius: 30,
+                  _isLoggedIn
+                      ? InkWell(
+                          onTap: () {
+                            _showSortMenu(context);
+                          },
+                          child: CircleAvatar(
+                            backgroundImage: NetworkImage(_profileImageUrl!),
+                            radius: 30,
+                          ),
+                        )
+                      : InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LoginScreen()),
+                            );
+                          },
+                          child: Icon(
+                            Icons.login_rounded,
+                            size: 40,
+                          ),
                         ),
-                      )
-                    : InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => LoginScreen()),
-                          );
-                        },
-                        child: Icon(
-                          Icons.login_rounded,
-                          size: 40,
-                        ),
-                      ),
+                ],
               ),
-              Positioned(
-                top: 110,
-                left: 19,
+              SizedBox(height: 10),
+              Align(
+                alignment: Alignment.centerLeft,
                 child: Text(
                   'Order your favourite food!',
                   style: TextStyle(
@@ -275,119 +267,111 @@ Widget _buildPopupMenu(BuildContext context) {
                   ),
                 ),
               ),
-              Positioned(
-                top: 163,
-                left: 19,
-                child: Container(
-                  width: 279,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0x26000000),
-                        blurRadius: 19,
-                        offset: Offset(0, 4),
+              SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      height: 60,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color(0x26000000),
+                            blurRadius: 19,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 15),
-                        child: Icon(
-                          Icons.search,
-                          size: 34,
-                          color: Color(0xFF3C2F2F),
-                        ),
-                      ),
-                      SizedBox(width: 10),
-                      Expanded(
-                        child: TextField(
-                          controller: _searchController,
-                          onChanged: (value) {
-                            filterData(value);
-                          },
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: 'Search',
-                            hintStyle: TextStyle(
-                              fontFamily: 'Roboto',
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500,
-                              height: 21.09 / 18,
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 15),
+                            child: Icon(
+                              Icons.search,
+                              size: 34,
                               color: Color(0xFF3C2F2F),
                             ),
                           ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                top: 163,
-                right: 16,
-                child: InkWell(
-                  onTap: () {
-                    _showSortMenu(context);
-                  },
-                  child: Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Color(0xFF19C08E),
-                    ),
-                    child: Icon(
-                      Icons.tune_rounded,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                top: 240,
-                left: 25,
-                child: FrameWithButtons(
-                  onCategorySelected: _onCategorySelected,
-                ),
-              ),
-              Positioned(
-                top: 320,
-                left: 12,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: List.generate(filteredData.length ~/ 2, (index) {
-                    final firstIndex = index * 2;
-                    final secondIndex = firstIndex + 1;
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 14),
-                      child: Row(
-                        children: [
-                          SizedBox(width: 4),
-                          CardWidget(
-                            imagePath: filteredData[firstIndex]['imagePath'],
-                            title: filteredData[firstIndex]['title'],
-                            subTitle: filteredData[firstIndex]['subTitle'],
-                            rating: filteredData[firstIndex]['rating'],
-                            price: filteredData[firstIndex]['price'],
-                          ),
-                          SizedBox(width: 4),
-                          if (secondIndex < filteredData.length)
-                            CardWidget(
-                              imagePath: filteredData[secondIndex]['imagePath'],
-                              title: filteredData[secondIndex]['title'],
-                              subTitle: filteredData[secondIndex]['subTitle'],
-                              rating: filteredData[secondIndex]['rating'],
-                              price: filteredData[secondIndex]['price'],
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: TextField(
+                              controller: _searchController,
+                              onChanged: (value) {
+                                filterData(value);
+                              },
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Search',
+                                hintStyle: TextStyle(
+                                  fontFamily: 'Roboto',
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500,
+                                  height: 21.09 / 18,
+                                  color: Color(0xFF3C2F2F),
+                                ),
+                              ),
                             ),
+                          ),
                         ],
                       ),
-                    );
-                  }),
-                ),
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  InkWell(
+                    onTap: () {
+                      _showSortMenu(context);
+                    },
+                    child: Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Color(0xFF19C08E),
+                      ),
+                      child: Icon(
+                        Icons.tune_rounded,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
+              FrameWithButtons(
+                onCategorySelected: _onCategorySelected,
+              ),
+              SizedBox(height: 20),
+              Column(
+                children: List.generate(filteredData.length ~/ 2, (index) {
+                  final firstIndex = index * 2;
+                  final secondIndex = firstIndex + 1;
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 14),
+                    child: Row(
+                      children: [
+                        SizedBox(width: 4),
+                        CardWidget(
+                          imagePath: filteredData[firstIndex]['imagePath'],
+                          title: filteredData[firstIndex]['title'],
+                          subTitle: filteredData[firstIndex]['subTitle'],
+                          rating: filteredData[firstIndex]['rating'],
+                          price: filteredData[firstIndex]['price'],
+                        ),
+                        SizedBox(width: 4),
+                        if (secondIndex < filteredData.length)
+                          CardWidget(
+                            imagePath: filteredData[secondIndex]['imagePath'],
+                            title: filteredData[secondIndex]['title'],
+                            subTitle: filteredData[secondIndex]['subTitle'],
+                            rating: filteredData[secondIndex]['rating'],
+                            price: filteredData[secondIndex]['price'],
+                          ),
+                      ],
+                    ),
+                  );
+                }),
               ),
             ],
           ),
