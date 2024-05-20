@@ -118,18 +118,18 @@ class _MyHomePageState extends State<MyHomePage> {
     ).show(context);
   }
 
-  void _onCategorySelected(String category) {
-    if (category == 'All') {
-      setState(() {
-        filteredData = cardData;
-      });
+
+void _onCategorySelected(String category) {
+  setState(() {
+    if (category.toLowerCase() == 'all') {
+      filteredData = cardData;
     } else {
-      setState(() {
-        filteredData =
-            cardData.where((item) => item['category'] == category).toList();
-      });
+      filteredData = cardData.where((item) =>
+          item['title'].toString().toLowerCase().contains(category.toLowerCase())).toList();
     }
-  }
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {

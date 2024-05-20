@@ -8,22 +8,19 @@ class OrderDetails extends StatefulWidget {
 }
 
 class _OrderDetailsState extends State<OrderDetails> {
-  Stream<QuerySnapshot>? _ordersStream; // Make the stream nullable
+  Stream<QuerySnapshot>? _ordersStream;
 
   @override
   void initState() {
     super.initState();
-    _fetchUserId(); // Fetch user ID from preferences
+    _fetchUserId();
   }
 
-  // Function to fetch user ID from preferences and initialize the stream
   Future<void> _fetchUserId() async {
-    // Fetch user ID from preferences
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? userId = prefs.getString('uid');
 
     if (userId != null) {
-      // Set up the stream to fetch orders for the specific user
       setState(() {
         _ordersStream = FirebaseFirestore.instance
             .collection('Order')
@@ -33,7 +30,6 @@ class _OrderDetailsState extends State<OrderDetails> {
     }
   }
 
-  // Function to get color based on order status
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
       case 'delivered':
@@ -53,8 +49,8 @@ class _OrderDetailsState extends State<OrderDetails> {
       appBar: AppBar(
         title: Text('Order Details'),
       ),
-      body: _ordersStream == null // Check if the stream is null
-          ? Center(child: CircularProgressIndicator()) // Show loading indicator
+      body: _ordersStream == null
+          ? Center(child: CircularProgressIndicator())
           : StreamBuilder<QuerySnapshot>(
               stream: _ordersStream!,
               builder: (context, snapshot) {
@@ -65,7 +61,6 @@ class _OrderDetailsState extends State<OrderDetails> {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 }
                 final orders = snapshot.data!.docs;
-                print(orders);
 
                 if (orders.isEmpty) {
                   return Center(child: Text('No orders available'));
@@ -89,8 +84,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                               color: Colors.grey.withOpacity(0.5),
                               spreadRadius: 3,
                               blurRadius: 5,
-                              offset:
-                                  Offset(0, 3), // changes position of shadow
+                              offset: Offset(0, 3),
                             ),
                           ],
                         ),
@@ -99,20 +93,20 @@ class _OrderDetailsState extends State<OrderDetails> {
                           children: [
                             ListTile(
                               title: Text(
-                                'Order Date: ${orderData['date'].toDate()}',
+                                'Order Date: ${orderData['date'] != null ? (orderData['date'] as Timestamp).toDate() : 'Unknown'}',
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                               subtitle: Text(
-                                'Order Status: ${orderData['status']}',
+                                'Order Status: ${orderData['status'] ?? 'Unknown'}',
                                 style: TextStyle(
-                                  color: _getStatusColor(orderData['status']),
+                                  color: _getStatusColor(orderData['status'] ?? 'Unknown'),
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
                             ListTile(
                               title: Text(
-                                'Order Total: \$${orderData['total(after discount and deliverycost)']}',
+                                'Order Total: \$${orderData['total(after discount and deliverycost)'] ?? '0.00'}',
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                             ),
@@ -129,18 +123,14 @@ class _OrderDetailsState extends State<OrderDetails> {
                               ),
                             ),
                             Column(
-                              children: (orderData['products'] as List<dynamic>)
-                                  .map<Widget>((product) {
-                                List<String> productDetails =
-                                    product.split('#');
+                              children: (orderData['products'] as List<dynamic>? ?? []).map<Widget>((product) {
+                                List<String> productDetails = product.split('#');
                                 String name = productDetails[0];
-                                int quantity = int.parse(productDetails[3]);
+                                int quantity = int.tryParse(productDetails[3]) ?? 1;
                                 return Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 4),
+                                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                                   child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
                                         name,
