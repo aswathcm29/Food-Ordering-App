@@ -1,14 +1,12 @@
-// ignore_for_file: prefer_const_constructors, use_build_context_synchronously
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:foodieapp/screens/loginscreen.dart';
 import 'package:image_picker/image_picker.dart';
-//import 'package:image_picker_for_web/image_picker_for_web.dart';
 import 'dart:io';
-//import 'dart:html' as html;
+
+import 'package:motion_toast/motion_toast.dart';
 
 class userinfo extends StatefulWidget {
   final String email;
@@ -57,6 +55,28 @@ class _userinfoState extends State<userinfo> {
     }
   }
 
+  void _showErrorToast(String message) {
+    MotionToast.error(
+      title: Text('Profile Information Added Failed!'),
+      description: Text(message),
+      animationType: AnimationType.fromTop,
+      position: MotionToastPosition.top,
+      width: 300,
+      height: 80,
+    ).show(context);
+  }
+
+  void _showSucessToast(String message) {
+    MotionToast.success(
+      title: Text('Profile Information Added Successfully!'),
+      description: Text(message),
+      animationType: AnimationType.fromTop,
+      position: MotionToastPosition.top,
+      width: 300,
+      height: 80,
+    ).show(context);
+  }
+
   Future<String> _uploadImage(XFile image) async {
     try {
       String fileName = '${widget.uid}.png';
@@ -74,39 +94,81 @@ class _userinfoState extends State<userinfo> {
   }
 
   Future<void> _saveToFirestore() async {
-    String fullName = _fullNameController.text;
-    String address = _addressController.text;
-    String contact = _contactController.text;
-    String username = _usernameController.text;
-    String additionalAddress = _additionalAddressController.text;
+    if (_formKey.currentState!.validate()) {
+      String fullName = _fullNameController.text;
+      String address = _addressController.text;
+      String contact = _contactController.text;
+      String username = _usernameController.text;
+      String additionalAddress = _additionalAddressController.text;
 
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-    try {
-      String? imageUrl;
-      if (_pickedFile != null) {
-        imageUrl = await _uploadImage(_pickedFile!);
+      try {
+        String? imageUrl;
+        if (_pickedFile != null) {
+          imageUrl = await _uploadImage(_pickedFile!);
+        }
+
+        await firestore.collection('UserData').doc(widget.uid).set({
+          'email': widget.email,
+          'fullName': fullName,
+          'address': address,
+          'contact': contact,
+          'username': username,
+          'additionalAddress': additionalAddress,
+          'profileImage': imageUrl,
+        });
+
+        print('Data added to Firestore');
+        _showSucessToast('Added Successfully!');
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => LoginScreen()),
+        );
+      } catch (error) {
+        print('Error adding data to Firestore: $error');
+        _showErrorToast('Added Failed!');
       }
-
-      await firestore.collection('UserData').doc(widget.uid).set({
-        'email': widget.email,
-        'fullName': fullName,
-        'address': address,
-        'contact': contact,
-        'username': username,
-        'additionalAddress': additionalAddress,
-        'profileImage': imageUrl,
-      });
-
-      print('Data added to Firestore');
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => LoginScreen()),
-      );
-    } catch (error) {
-      print('Error adding data to Firestore: $error');
     }
+  }
+
+  String? _validateFullName(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your full name';
+    }
+    if (RegExp(r'[0-9]').hasMatch(value)) {
+      return 'Full name should not contain numbers';
+    }
+    return null;
+  }
+
+  String? _validateAddress(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your Address';
+    }
+    return null;
+  }
+
+  String? _validateContact(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your contact number';
+    }
+    if (!RegExp(r'^0\d{10}$').hasMatch(value)) {
+      return 'Contact must be 11 digits and start with 0';
+    }
+    return null;
+  }
+
+  String? _validateUsername(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter Valid Username';
+    }
+    if (RegExp(r'[0-9]').hasMatch(value)) {
+      return 'Username should not contain numbers';
+    }
+
+    return null;
   }
 
   @override
@@ -171,22 +233,27 @@ class _userinfoState extends State<userinfo> {
               TextFormField(
                 controller: _fullNameController,
                 decoration: InputDecoration(labelText: 'Full Name'),
+                validator: _validateFullName,
               ),
               TextFormField(
                 controller: _addressController,
                 decoration: InputDecoration(labelText: 'Address'),
+                validator: _validateAddress,
               ),
               TextFormField(
                 controller: _additionalAddressController,
                 decoration: InputDecoration(labelText: 'Additional Address'),
+                validator: _validateAddress,
               ),
               TextFormField(
                 controller: _contactController,
                 decoration: InputDecoration(labelText: 'Contact'),
+                validator: _validateContact,
               ),
               TextFormField(
                 controller: _usernameController,
                 decoration: InputDecoration(labelText: 'Username'),
+                validator: _validateUsername,
               ),
               SizedBox(height: 20),
               ElevatedButton(

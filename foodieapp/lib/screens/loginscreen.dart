@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously, prefer_const_constructors
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -7,7 +5,7 @@ import 'package:sign_in_button/sign_in_button.dart';
 import 'package:foodieapp/screens/myhomepage.dart';
 import 'package:foodieapp/screens/signupscreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:motion_toast/motion_toast.dart'; // Add this import
+import 'package:motion_toast/motion_toast.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -24,42 +22,67 @@ class _LoginScreenState extends State<LoginScreen> {
     await prefs.setString('uid', uid);
   }
 
- void LoginHandler() async {
-  String email = _emailController.text;
-  String password = _passwordController.text;
-
-  print('Email: $email');
-  print('Password: $password');
-  try {
-    final loginUser = await FirebaseAuth.instance
-        .signInWithEmailAndPassword(email: email, password: password);
-
-    if (loginUser.user != null) {
-      print('User logged in');
-      print(loginUser);
-
-      // Store UID
-      await _storeUid(loginUser.user!.uid);
-
-      // Show login success notification with email
-      MotionToast.success(
-        title: Text('Login Successful'),
-        description: Text('Logged in as $email'),
-        animationType: AnimationType.fromTop,
-        position: MotionToastPosition.top,
-        width: 300,
-        height: 80,
-      ).show(context);
-
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => MyHomePage()));
-    } else {
-      print('User not logged in');
-    }
-  } catch (e) {
-    print(e);
+  void _showErrorToast(String message) {
+    MotionToast.error(
+      title: Text('Login Failed'),
+      description: Text(message),
+      animationType: AnimationType.fromTop,
+      position: MotionToastPosition.top,
+      width: 300,
+      height: 80,
+    ).show(context);
   }
-}
+
+  void LoginHandler() async {
+    String email = _emailController.text;
+    String password = _passwordController.text;
+
+    print('Email: $email');
+    print('Password: $password');
+
+    try {
+      final loginUser = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+
+      if (loginUser.user != null) {
+        print('User logged in');
+        print(loginUser);
+
+        // Store UID
+        await _storeUid(loginUser.user!.uid);
+
+        // Show login success notification with email
+        MotionToast.success(
+          title: Text('Login Successful'),
+          description: Text('Logged in as $email'),
+          animationType: AnimationType.fromTop,
+          position: MotionToastPosition.top,
+          width: 300,
+          height: 80,
+        ).show(context);
+
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => MyHomePage()));
+      } else {
+        print('User not logged in');
+      }
+    } on FirebaseAuthException catch (e) {
+      // print(e.code);
+      _showErrorToast(e.code);
+      // if (e.code == 'user-not-found') {
+      //   _showErrorToast('No user found for that email.');
+      // } else if (e.code == 'wrong-password') {
+      //   _showErrorToast('Wrong password provided.');
+      // } else if (e.code == 'invalid-email') {
+      //   _showErrorToast('The email address is not valid.');
+      // } else {
+      //   _showErrorToast('An error occurred. Please try again.');
+      // }
+      print(e);
+    }
+
+  }
+
   Future<void> _signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -88,6 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       print(e);
+      _showErrorToast('Google sign-in failed. Please try again.');
     }
   }
 
@@ -126,7 +150,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      
                       Image.asset(
                         'assets/images/star.png',
                         height: 45,

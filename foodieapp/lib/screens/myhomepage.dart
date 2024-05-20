@@ -35,6 +35,8 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+
+
   final TextEditingController _searchController = TextEditingController();
   bool _isLoggedIn = false;
   String? _profileImageUrl;

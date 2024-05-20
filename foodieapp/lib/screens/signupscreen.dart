@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:foodieapp/screens/loginscreen.dart';
 import 'package:foodieapp/screens/userinfo.dart';
+import 'package:motion_toast/motion_toast.dart';
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -16,6 +17,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
   late TextEditingController _passwordController;
   late TextEditingController _confirmPasswordController;
   bool _isPasswordVisible = false;
+
+  void _showErrorToast(String message) {
+    MotionToast.error(
+      title: Text('Signup Failed'),
+      description: Text(message),
+      animationType: AnimationType.fromTop,
+      position: MotionToastPosition.top,
+      width: 300,
+      height: 80,
+    ).show(context);
+  }
+
+  void _showSucessToast(String message) {
+    MotionToast.success(
+      title: Text('Signup Successful'),
+      description: Text(message),
+      animationType: AnimationType.fromTop,
+      position: MotionToastPosition.top,
+      width: 300,
+      height: 80,
+    ).show(context);
+  }
 
   void SignupHandler() async {
     // Get the entered data
@@ -33,6 +56,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     if (password != confirmPassword) {
       print('Passwords do not match');
+      _showErrorToast('Passwords do not match');
       return;
     } else {
       print('Email: $email');
@@ -41,6 +65,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
       try {
         final newUser = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: email, password: password);
+
+        _showSucessToast("Signup Successful");
 
         if (newUser.user != null) {
           Navigator.push(
@@ -53,8 +79,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
           print('User not created');
         }
         // print(newUser);
-      } catch (e) {
-        print("Eror");
+      } on FirebaseAuthException catch (e) {
+        // print(e.code);
+        _showErrorToast(e.code);
+        // if (e.code == 'user-not-found') {
+        //   _showErrorToast('No user found for that email.');
+        // } else if (e.code == 'wrong-password') {
+        //   _showErrorToast('Wrong password provided.');
+        // } else if (e.code == 'invalid-email') {
+        //   _showErrorToast('The email address is not valid.');
+        // } else {
+        //   _showErrorToast('An error occurred. Please try again.');
+        // }
+        print(e);
       }
     }
   }
