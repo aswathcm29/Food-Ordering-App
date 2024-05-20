@@ -118,17 +118,93 @@ class _MyHomePageState extends State<MyHomePage> {
     ).show(context);
   }
 
+  void _onCategorySelected(String category) {
+    setState(() {
+      if (category.toLowerCase() == 'all') {
+        filteredData = cardData;
+      } else {
+        filteredData = cardData
+            .where((item) =>
+                item['title']
+                    .toString()
+                    .toLowerCase()
+                    .contains(category.toLowerCase()))
+            .toList();
+      }
+    });
+  }
 
-void _onCategorySelected(String category) {
-  setState(() {
-    if (category.toLowerCase() == 'all') {
-      filteredData = cardData;
-    } else {
-      filteredData = cardData.where((item) =>
-          item['title'].toString().toLowerCase().contains(category.toLowerCase())).toList();
-    }
-  });
+  void sortByTitle() {
+    setState(() {
+      filteredData.sort((a, b) => a['title'].compareTo(b['title']));
+    });
+  }
+
+  void sortByPrice() {
+    setState(() {
+      filteredData.sort((a, b) => a['price'].compareTo(b['price']));
+    });
+  }
+
+  
+void _showSortMenu(BuildContext context) {
+  showMenu(
+    context: context,
+    position: RelativeRect.fromLTRB(1000, 220, 30, 0),
+    items: [
+      PopupMenuItem(
+        child: ListTile(
+          leading: Icon(Icons.sort_by_alpha, color: Color(0xFF19C08E)),
+          title: Text('Sort by Title', style: TextStyle(color: Colors.black87)),
+          onTap: () {
+            Navigator.pop(context); // Close the menu
+            sortByTitle();
+          },
+        ),
+      ),
+      PopupMenuItem(
+        child: ListTile(
+          leading: Icon(Icons.attach_money, color: Color(0xFF19C08E)),
+          title: Text('Sort by Price', style: TextStyle(color: Colors.black87)),
+          onTap: () {
+            Navigator.pop(context); // Close the menu
+            sortByPrice();
+          },
+        ),
+      ),
+    ],
+    color: Colors.white, // Background color of the popup menu
+    elevation: 8, // Shadow elevation of the popup menu
+  );
 }
+
+Widget _buildPopupMenu(BuildContext context) {
+  return GestureDetector(
+    onTap: () {
+      _showSortMenu(context);
+    },
+    child: Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.only(
+          topRight: Radius.circular(10.0), // Rounded border on top right
+        ),
+        border: Border(
+          top: BorderSide(width: 1.0, color: Colors.grey[300]!), // Border from top right
+          right: BorderSide(width: 1.0, color: Colors.grey[300]!), // Border from top right
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+        child: Icon(
+          Icons.tune_rounded,
+          color: Color(0xFF19C08E),
+        ),
+      ),
+    ),
+  );
+}
+
+
 
 
   @override
@@ -162,105 +238,7 @@ void _onCategorySelected(String category) {
                 child: _isLoggedIn
                     ? InkWell(
                         onTap: () {
-                          showMenu(
-                            context: context,
-                            position: RelativeRect.fromLTRB(1000, 120, 0, 0),
-                            items: [
-                              PopupMenuItem(
-                                child: ListTile(
-                                  leading: Icon(Icons.shopping_cart),
-                                  title: Text('View Cart'),
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => AddToCart()),
-                                    );
-                                  },
-                                ),
-                              ),
-                              PopupMenuItem(
-                                child: ListTile(
-                                  leading: Icon(Icons.logout),
-                                  title: Text('Logout'),
-                                  onTap: () {
-                                    // Show the confirmation dialog
-                                    showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return Dialog(
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10.0),
-                                          ),
-                                          elevation: 0,
-                                          backgroundColor: Colors.transparent,
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(10.0),
-                                              color: Colors.white,
-                                            ),
-                                            padding: EdgeInsets.all(20.0),
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: <Widget>[
-                                                Text(
-                                                  'Confirm Logout',
-                                                  style: TextStyle(
-                                                    fontSize: 20.0,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                                SizedBox(height: 20.0),
-                                                Text(
-                                                  'Are you sure you want to logout?',
-                                                  style:
-                                                      TextStyle(fontSize: 16.0),
-                                                ),
-                                                SizedBox(height: 20.0),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.end,
-                                                  children: <Widget>[
-                                                    TextButton(
-                                                      child: Text(
-                                                        'Cancel',
-                                                        style: TextStyle(
-                                                            color: Colors.grey),
-                                                      ),
-                                                      onPressed: () {
-                                                        Navigator.of(context)
-                                                            .pop(); // Close the dialog
-                                                      },
-                                                    ),
-                                                    TextButton(
-                                                      child: Text(
-                                                        'Logout',
-                                                        style: TextStyle(
-                                                            color: Colors.red),
-                                                      ),
-                                                      onPressed: () {
-                                                        _logout();
-                                                        Navigator.of(context)
-                                                            .pop(); // Close the dialog
-                                                        Navigator.pop(
-                                                            context); // Close the menu
-                                                      },
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  },
-                                ),
-                              ),
-                            ],
-                          );
+                          _showSortMenu(context);
                         },
                         child: CircleAvatar(
                           backgroundImage: NetworkImage(_profileImageUrl!),
@@ -351,7 +329,7 @@ void _onCategorySelected(String category) {
                 right: 16,
                 child: InkWell(
                   onTap: () {
-                    // Handle icon tap
+                    _showSortMenu(context);
                   },
                   child: Container(
                     width: 60,
