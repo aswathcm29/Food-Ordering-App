@@ -12,6 +12,15 @@ class FrameWithButtons extends StatefulWidget {
 
 class _FrameWithButtonsState extends State<FrameWithButtons> {
   String selectedCategory = 'All'; // Default selected category
+  final ScrollController _scrollController = ScrollController(); // Add this line
+
+  void _scrollToSelectedButton(double position) {
+    _scrollController.animateTo(
+      position,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +28,7 @@ class _FrameWithButtonsState extends State<FrameWithButtons> {
       width: 300,
       height: 50,
       child: ListView(
+        controller: _scrollController, // Add this line
         scrollDirection: Axis.horizontal,
         children: [
           CustomButton(
@@ -30,6 +40,7 @@ class _FrameWithButtonsState extends State<FrameWithButtons> {
                 selectedCategory = 'All';
               });
               widget.onCategorySelected('All'); // Call callback with 'All'
+              _scrollToSelectedButton(0); // Scroll to the position of the 'All' button
             },
           ),
           SizedBox(width: 14),
@@ -42,6 +53,7 @@ class _FrameWithButtonsState extends State<FrameWithButtons> {
                 selectedCategory = 'Burger';
               });
               widget.onCategorySelected('Burger'); // Call callback with 'Burger'
+              _scrollToSelectedButton(64); // Adjust position to scroll
             },
           ),
           SizedBox(width: 14),
@@ -54,6 +66,7 @@ class _FrameWithButtonsState extends State<FrameWithButtons> {
                 selectedCategory = 'Pizza';
               });
               widget.onCategorySelected('Pizza'); // Call callback with 'Pizza'
+              _scrollToSelectedButton(128); // Adjust position to scroll
             },
           ),
           SizedBox(width: 14),
@@ -66,8 +79,10 @@ class _FrameWithButtonsState extends State<FrameWithButtons> {
                 selectedCategory = 'Fries';
               });
               widget.onCategorySelected('Fries'); // Call callback with 'Fries'
+              _scrollToSelectedButton(280); // Adjust position to scroll
             },
           ),
+          SizedBox(width: 14),
           CustomButton(
             text: 'Shawarma',
             color: selectedCategory == 'Shawarma' ? Color(0xFF19C08E) : Color(0xFFF3F4F6),
@@ -77,8 +92,10 @@ class _FrameWithButtonsState extends State<FrameWithButtons> {
                 selectedCategory = 'Shawarma';
               });
               widget.onCategorySelected('Shawarma'); // Call callback with 'Shawarma'
+              _scrollToSelectedButton(350); // Adjust position to scroll
             },
           ),
+          SizedBox(width: 14),
           CustomButton(
             text: 'Pasta',
             color: selectedCategory == 'Pasta' ? Color(0xFF19C08E) : Color(0xFFF3F4F6),
@@ -88,8 +105,10 @@ class _FrameWithButtonsState extends State<FrameWithButtons> {
                 selectedCategory = 'Pasta';
               });
               widget.onCategorySelected('Pasta'); // Call callback with 'Pasta'
+              _scrollToSelectedButton(450); // Adjust position to scroll
             },
           ),
+          SizedBox(width: 14),
           CustomButton(
             text: 'Sandwich',
             color: selectedCategory == 'Sandwich' ? Color(0xFF19C08E) : Color(0xFFF3F4F6),
@@ -99,6 +118,7 @@ class _FrameWithButtonsState extends State<FrameWithButtons> {
                 selectedCategory = 'Sandwich';
               });
               widget.onCategorySelected('Sandwich'); // Call callback with 'Sandwich'
+              _scrollToSelectedButton(500); // Adjust position to scroll
             },
           ),
         ],

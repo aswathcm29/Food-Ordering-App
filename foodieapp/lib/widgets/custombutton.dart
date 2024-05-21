@@ -10,7 +10,7 @@ class CustomButton extends StatelessWidget {
     required this.text,
     required this.color,
     required this.textColor,
-    required this.onTap,
+    required this.onTap, GlobalKey<State<StatefulWidget>>? key,
   });
 
   @override

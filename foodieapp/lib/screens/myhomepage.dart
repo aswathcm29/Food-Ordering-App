@@ -593,7 +593,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             price: filteredData[secondIndex]['price'],
                             onFavoriteSelected: _addToFavourites,
                             onFavoriteRemoved: _removeFromFavourites,
-favourites: [],
+                            favourites: [],
                           ),
                       ],
                     ),
