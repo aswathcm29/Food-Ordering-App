@@ -394,62 +394,71 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _onSpeechResult(SpeechRecognitionResult result) {
-  setState(() {
-    String _spokenWords = result.recognizedWords.toLowerCase();
-    bool found = false;
+    setState(() {
+      String _spokenWords = result.recognizedWords.toLowerCase();
+      // print(_spokenWords);
+      if (_spokenWords.contains('pizza')) {
+        // _searchController.text = "pizza";
+        // _searchController.text = _searchController.text.trim();
 
-    if (_spokenWords.contains('pizza')) {
-      filterData("pizza");
-      found = true;
-    }
-    if (_spokenWords.contains('burger')) {
-      filterData("burger");
-      found = true;
-    }
-    if (_spokenWords.contains('fries')) {
-      filterData("fries");
-      found = true;
-    }
-    if (_spokenWords.contains('shawarma')) {
-      filterData("shawarma");
-      found = true;
-    }
-    if (_spokenWords.contains('pasta')) {
-      filterData("pasta");
-      found = true;
-    }
-    if (_spokenWords.contains('sandwich')) {
-      filterData("sandwich");
-      found = true;
-    }
-    if (_spokenWords.contains('all')) {
-      filterData("all");
-      found = true;
-    }
+        // print(_spokenWords);
+        // _searchController.text = "";
+        filterData("pizza");
+      }
+      if (_spokenWords.contains('burger')) {
+        // _searchController.text = "burger";
+        // _searchController.text = _searchController.text.trim();
 
-    if (!found) {
-      _searchController.clear();
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('No items found'),
-            content: Text('Failed to find any matching items.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
-    }
-  });
-}
+        // print(_spokenWords);
+        // _searchController.text = "";
+        filterData("burger");
+      }
+      if (_spokenWords.contains('fries')) {
+        // _searchController.text = "burger";
+        // _searchController.text = _searchController.text.trim();
 
+        // print(_spokenWords);
+        // _searchController.text = "";
+        filterData("fries");
+      }
+      if (_spokenWords.contains('shawarma')) {
+        // _searchController.text = "burger";
+        // _searchController.text = _searchController.text.trim();
+
+        // print(_spokenWords);
+        // _searchController.text = "";
+        filterData("shawarma");
+      }
+      if (_spokenWords.contains('pasta')) {
+        // _searchController.text = "burger";
+        // _searchController.text = _searchController.text.trim();
+
+        // print(_spokenWords);
+        // _searchController.text = "";
+        filterData("pasta");
+      }
+      if (_spokenWords.contains('sandwich')) {
+        // _searchController.text = "burger";
+        // _searchController.text = _searchController.text.trim();
+
+        // print(_spokenWords);
+        // _searchController.text = "";
+        filterData("sandwich");
+      }
+      if (_spokenWords.contains('all')) {
+        // _searchController.text = "burger";
+        // _searchController.text = _searchController.text.trim();
+
+        // print(_spokenWords);
+        // _searchController.text = "";
+        filterData("all");
+      }
+       else {
+        _searchController.text = "";
+        _searchController.text = _searchController.text.trim();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
