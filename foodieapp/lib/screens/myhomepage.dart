@@ -8,6 +8,8 @@ import 'package:foodieapp/screens/orderdetails.dart';
 import 'package:foodieapp/widgets/cardwidget.dart';
 import 'package:foodieapp/widgets/framebutton.dart';
 import 'package:motion_toast/motion_toast.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -16,6 +18,118 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
+  // final List<Map<String, dynamic>> cardData2 = [
+  //   {
+  //     'imagePath': 'assets/images/sandwich.png',
+  //     'title': 'Club Sandwich',
+  //     'subTitle': "Classic Club",
+  //     'rating': 4.8,
+  //     'price': '150',
+  //     'availableQuantity': 20,
+  //     'description':
+  //         'A delicious club sandwich stacked with turkey, bacon, and fresh veggies.'
+  //   },
+  //   {
+  //     'imagePath': 'assets/images/pasta.png',
+  //     'title': 'Spaghetti Carbonara Pasta',
+  //     'subTitle': "Italian Pasta",
+  //     'rating': 4.7,
+  //     'price': '250',
+  //     'availableQuantity': 18,
+  //     'description':
+  //         'A classic Italian pasta dish with creamy sauce, pancetta, and parmesan.'
+  //   },
+  //   {
+  //     'imagePath': 'assets/images/fries.png',
+  //     'title': 'French Fries',
+  //     'subTitle': "Crispy Fries",
+  //     'rating': 4.5,
+  //     'price': '100',
+  //     'availableQuantity': 40,
+  //     'description':
+  //         'Golden and crispy French fries, perfect as a side dish or snack.'
+  //   },
+  //   {
+  //     'imagePath': 'assets/images/pasta3.png',
+  //     'title': 'Fettuccine Alfredo Pasta',
+  //     'subTitle': "Creamy Pasta",
+  //     'rating': 4.8,
+  //     'price': '280',
+  //     'availableQuantity': 15,
+  //     'description':
+  //         'Rich and creamy fettuccine Alfredo with Parmesan cheese and butter.'
+  //   },
+  //   {
+  //     'imagePath': 'assets/images/fries.png',
+  //     'title': 'French Fries',
+  //     'subTitle': "Crispy Fries",
+  //     'rating': 4.5,
+  //     'price': '100',
+  //     'availableQuantity': 40,
+  //     'description':
+  //         'Golden and crispy French fries, perfect as a side dish or snack.'
+  //   },
+  //   {
+  //     'imagePath': 'assets/images/fries2.png',
+  //     'title': 'Sweet Potato Fries',
+  //     'subTitle': "Sweet and Savory",
+  //     'rating': 4.7,
+  //     'price': '120',
+  //     'availableQuantity': 30,
+  //     'description':
+  //         'Crispy sweet potato fries with a hint of cinnamon and sea salt.'
+  //   },
+  //   {
+  //     'imagePath': 'assets/images/fries3.png',
+  //     'title': 'Curly Fries',
+  //     'subTitle': "Twisty Treats",
+  //     'rating': 4.6,
+  //     'price': '110',
+  //     'availableQuantity': 35,
+  //     'description': 'Fun and curly fries with a perfect blend of spices.'
+  //   },
+  //   {
+  //     'imagePath': 'assets/images/shawarma.png',
+  //     'title': 'Chicken Shawarma',
+  //     'subTitle': "Middle Eastern Delight",
+  //     'rating': 4.6,
+  //     'price': '180',
+  //     'availableQuantity': 22,
+  //     'description':
+  //         'A flavorful chicken shawarma wrapped in soft pita bread with fresh toppings.'
+  //   },
+  //   {
+  //     'imagePath': 'assets/images/shawarma2.png',
+  //     'title': 'Beef Shawarma',
+  //     'subTitle': "Tender Beef",
+  //     'rating': 4.7,
+  //     'price': '200',
+  //     'availableQuantity': 20,
+  //     'description':
+  //         'Juicy beef shawarma with a mix of vegetables and delicious sauce.'
+  //   },
+  //   {
+  //     'imagePath': 'assets/images/shawarma3.png',
+  //     'title': 'Falafel Shawarma',
+  //     'subTitle': "Vegetarian Delight",
+  //     'rating': 4.5,
+  //     'price': '150',
+  //     'availableQuantity': 25,
+  //     'description':
+  //         'Crispy falafel balls wrapped with fresh vegetables and tahini sauce.'
+  //   },
+  // ];
+  // Future<void> sendDataToFirestore(List<Map<String, dynamic>> data) async {
+  //   // Get a reference to the Firestore collection
+  //   CollectionReference foodDataCollection =
+  //       FirebaseFirestore.instance.collection('foodData');
+
+  //   // Iterate through the data and add each item to the collection
+  //   for (var item in data) {
+  //     await foodDataCollection.add(item);
+  //   }
+  //   print('Data sent to Firestore successfully!');
+  // }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -41,12 +155,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<Map<String, dynamic>> cardData = [];
   List<Map<String, dynamic>> filteredData = [];
+  final SpeechToText _speechToText = SpeechToText();
 
   @override
   void initState() {
     super.initState();
     _loadUserProfile();
     _fetchProductDataFromFirestore();
+    // sendDataToFirestore(cardData2);
   }
 
   Future<void> _fetchProductDataFromFirestore() async {
@@ -99,31 +215,30 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
- void _logout() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  await prefs.remove('uid');
-  setState(() {
-    _isLoggedIn = false;
-    _profileImageUrl = null;
-  });
+  void _logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('uid');
+    setState(() {
+      _isLoggedIn = false;
+      _profileImageUrl = null;
+    });
 
-  // Show logout success notification
-  MotionToast.success(
-    title: Text('Logout Successful'),
-    description: Text('You have logged out successfully'),
-    animationType: AnimationType.fromTop,
-    position: MotionToastPosition.top,
-    width: 300,
-    height: 80,
-  ).show(context);
+    // Show logout success notification
+    MotionToast.success(
+      title: Text('Logout Successful'),
+      description: Text('You have logged out successfully'),
+      animationType: AnimationType.fromTop,
+      position: MotionToastPosition.top,
+      width: 300,
+      height: 80,
+    ).show(context);
 
-  // Reload the page
-  Navigator.pushReplacement(
-    context,
-    MaterialPageRoute(builder: (context) => MyHomePage()),
-  );
-}
-
+    // Reload the page
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => MyHomePage()),
+    );
+  }
 
   void _onCategorySelected(String category) {
     setState(() {
@@ -217,6 +332,60 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void initSpeech() async {
+    setState(() {});
+  }
+
+  void _startListening() async {
+    try {
+      bool available = await _speechToText.initialize();
+      if (available && !_speechToText.isListening) {
+        await _speechToText.listen(
+          onResult: _onSpeechResult,
+          listenFor: Duration(seconds: 10), // Adjust duration as needed
+        );
+      } else if (_speechToText.isListening) {
+        print('Speech recognition is already active.');
+      } else {
+        print('Speech recognition not available');
+      }
+    } catch (e) {
+      print('Error starting speech recognition: $e');
+    }
+    setState(() {});
+  }
+
+  void _stopListening() async {
+    await _speechToText.stop();
+    setState(() {});
+  }
+
+  void _onSpeechResult(SpeechRecognitionResult result) {
+    setState(() {
+      String _spokenWords = result.recognizedWords.toLowerCase();
+      // print(_spokenWords);
+      if (_spokenWords.contains('pizza')) {
+        // _searchController.text = "pizza";
+        // _searchController.text = _searchController.text.trim();
+
+        // print(_spokenWords);
+        // _searchController.text = "";
+        filterData("pizza");
+      }
+      if (_spokenWords.contains('burger')) {
+        // _searchController.text = "burger";
+        // _searchController.text = _searchController.text.trim();
+
+        // print(_spokenWords);
+        // _searchController.text = "";
+        filterData("burger");
+      } else {
+        _searchController.text = "";
+        _searchController.text = _searchController.text.trim();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -241,28 +410,28 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ),
                   _isLoggedIn
-    ? InkWell(
-        onTap: () {
-          _showUserMenu(context);
-        },
-        child: CircleAvatar(
-          backgroundImage: NetworkImage(_profileImageUrl!),
-          radius: 30,
-        ),
-      )
-    : InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => LoginScreen()),
-          );
-        },
-        child: Icon(
-          Icons.login_rounded,
-          size: 40,
-        ),
-      )
-
+                      ? InkWell(
+                          onTap: () {
+                            _showUserMenu(context);
+                          },
+                          child: CircleAvatar(
+                            backgroundImage: NetworkImage(_profileImageUrl!),
+                            radius: 30,
+                          ),
+                        )
+                      : InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LoginScreen()),
+                            );
+                          },
+                          child: Icon(
+                            Icons.login_rounded,
+                            size: 40,
+                          ),
+                        )
                 ],
               ),
               SizedBox(height: 10),
@@ -323,6 +492,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                   height: 21.09 / 18,
                                   color: Color(0xFF3C2F2F),
                                 ),
+                                suffixIcon: GestureDetector(
+                                  onTap: _startListening,
+                                  child: Icon(
+                                    Icons.mic,
+                                    color: Colors.grey,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
@@ -367,7 +543,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         CardWidget(
                           imagePath: filteredData[firstIndex]['imagePath'],
                           title: filteredData[firstIndex]['title'],
-                          subTitle: filteredData[firstIndex]['subTitle'], rating: filteredData[firstIndex]['rating'],
+                          subTitle: filteredData[firstIndex]['subTitle'],
+                          rating: filteredData[firstIndex]['rating'],
                           price: filteredData[firstIndex]['price'],
                         ),
                         SizedBox(width: 4),
@@ -411,8 +588,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-
-
 // import 'dart:math';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:flutter/material.dart';
@@ -433,7 +608,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 // class _MyHomePageState extends State<MyHomePage> {
 //   int _selectedIndex = 0;
-  
+
 //   void _onItemTapped(int index) {
 //     setState(() {
 //       _selectedIndex = index;
@@ -451,6 +626,7 @@ class _MyHomePageState extends State<MyHomePage> {
 //       );
 //     }
 //   }
+
 //   final TextEditingController _searchController = TextEditingController();
 //   bool _isLoggedIn = false;
 //   String? _profileImageUrl;
@@ -515,9 +691,9 @@ class _MyHomePageState extends State<MyHomePage> {
 //       }).toList();
 
 //       // Set the search field with the matched title
-//       if (filteredData.isNotEmpty) {
-//         _searchController.text = filteredData.first['title'];
-//       }
+//       // if (filteredData.isNotEmpty) {
+//       //   _searchController.text = filteredData.first['title'];
+//       // }
 //     });
 //   }
 
@@ -546,11 +722,10 @@ class _MyHomePageState extends State<MyHomePage> {
 //         filteredData = cardData;
 //       } else {
 //         filteredData = cardData
-//             .where((item) =>
-//                 item['title']
-//                     .toString()
-//                     .toLowerCase()
-//                     .contains(category.toLowerCase()))
+//             .where((item) => item['title']
+//                 .toString()
+//                 .toLowerCase()
+//                 .contains(category.toLowerCase()))
 //             .toList();
 //       }
 //     });
@@ -576,8 +751,8 @@ class _MyHomePageState extends State<MyHomePage> {
 //         PopupMenuItem(
 //           child: ListTile(
 //             leading: Icon(Icons.sort_by_alpha, color: Color(0xFF19C08E)),
-//             title: Text('Sort by Title',
-//                 style: TextStyle(color: Colors.black87)),
+//             title:
+//                 Text('Sort by Title', style: TextStyle(color: Colors.black87)),
 //             onTap: () {
 //               Navigator.pop(context); // Close the menu
 //               sortByTitle();
@@ -587,8 +762,8 @@ class _MyHomePageState extends State<MyHomePage> {
 //         PopupMenuItem(
 //           child: ListTile(
 //             leading: Icon(Icons.attach_money, color: Color(0xFF19C08E)),
-//             title: Text('Sort by Price',
-//                 style: TextStyle(color: Colors.black87)),
+//             title:
+//                 Text('Sort by Price', style: TextStyle(color: Colors.black87)),
 //             onTap: () {
 //               Navigator.pop(context); // Close the menu
 //               sortByPrice();
@@ -631,25 +806,24 @@ class _MyHomePageState extends State<MyHomePage> {
 //     setState(() {});
 //   }
 
-//  void _startListening() async {
-//   try {
-//     bool available = await _speechToText.initialize();
-//     if (available && !_speechToText.isListening) {
-//       await _speechToText.listen(
-//         onResult: _onSpeechResult,
-//         listenFor: Duration(seconds: 10), // Adjust duration as needed
-//       );
-//     } else if (_speechToText.isListening) {
-//       print('Speech recognition is already active.');
-//     } else {
-//       print('Speech recognition not available');
+//   void _startListening() async {
+//     try {
+//       bool available = await _speechToText.initialize();
+//       if (available && !_speechToText.isListening) {
+//         await _speechToText.listen(
+//           onResult: _onSpeechResult,
+//           listenFor: Duration(seconds: 10), // Adjust duration as needed
+//         );
+//       } else if (_speechToText.isListening) {
+//         print('Speech recognition is already active.');
+//       } else {
+//         print('Speech recognition not available');
+//       }
+//     } catch (e) {
+//       print('Error starting speech recognition: $e');
 //     }
-//   } catch (e) {
-//     print('Error starting speech recognition: $e');
+//     setState(() {});
 //   }
-//   setState(() {});
-// }
-
 
 //   void _stopListening() async {
 //     await _speechToText.stop();
@@ -658,10 +832,27 @@ class _MyHomePageState extends State<MyHomePage> {
 
 //   void _onSpeechResult(SpeechRecognitionResult result) {
 //     setState(() {
-//       String _spokenWords = result.recognizedWords.toLowerCase(); 
-      
-//       filterData(_spokenWords); 
-      
+//       String _spokenWords = result.recognizedWords.toLowerCase();
+//       // print(_spokenWords);
+//       if (_spokenWords.contains('pizza')) {
+//         // _searchController.text = "pizza";
+//         // _searchController.text = _searchController.text.trim();
+
+//         // print(_spokenWords);
+//         // _searchController.text = "";
+//         filterData("pizza");
+//       }
+//       if (_spokenWords.contains('burger')) {
+//         // _searchController.text = "burger";
+//         // _searchController.text = _searchController.text.trim();
+
+//         // print(_spokenWords);
+//         // _searchController.text = "";
+//         filterData("burger");
+//       } else {
+//         _searchController.text = "";
+//         _searchController.text = _searchController.text.trim();
+//       }
 //     });
 //   }
 
@@ -822,8 +1013,7 @@ class _MyHomePageState extends State<MyHomePage> {
 //                 left: 12,
 //                 child: Column(
 //                   crossAxisAlignment: CrossAxisAlignment.start,
-//                   children:
-//                       List.generate(filteredData.length ~/ 2, (index) {
+//                   children: List.generate(filteredData.length ~/ 2, (index) {
 //                     final firstIndex = index * 2;
 //                     final secondIndex = firstIndex + 1;
 //                     return Padding(
@@ -832,22 +1022,18 @@ class _MyHomePageState extends State<MyHomePage> {
 //                         children: [
 //                           SizedBox(width: 4),
 //                           CardWidget(
-//                             imagePath:
-//                                 filteredData[firstIndex]['imagePath'],
+//                             imagePath: filteredData[firstIndex]['imagePath'],
 //                             title: filteredData[firstIndex]['title'],
-//                             subTitle:
-//                                 filteredData[firstIndex]['subTitle'],
+//                             subTitle: filteredData[firstIndex]['subTitle'],
 //                             rating: filteredData[firstIndex]['rating'],
 //                             price: filteredData[firstIndex]['price'],
 //                           ),
 //                           SizedBox(width: 4),
 //                           if (secondIndex < filteredData.length)
 //                             CardWidget(
-//                               imagePath:
-//                                   filteredData[secondIndex]['imagePath'],
+//                               imagePath: filteredData[secondIndex]['imagePath'],
 //                               title: filteredData[secondIndex]['title'],
-//                               subTitle:
-//                                   filteredData[secondIndex]['subTitle'],
+//                               subTitle: filteredData[secondIndex]['subTitle'],
 //                               rating: filteredData[secondIndex]['rating'],
 //                               price: filteredData[secondIndex]['price'],
 //                             ),

@@ -71,7 +71,7 @@ class _CardWidgetState extends State<CardWidget> {
                 ),
               ),
             ),
-            SizedBox(height: 4),
+            // SizedBox(height: 4),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
               child: Column(
