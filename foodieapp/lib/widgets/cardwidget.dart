@@ -7,6 +7,9 @@ class CardWidget extends StatefulWidget {
   final double rating;
   final String subTitle;
   final String price;
+  final Function onFavoriteSelected;
+  final Function onFavoriteRemoved;
+  final List<Map<String, dynamic>> favourites;
 
   const CardWidget({
     required this.imagePath,
@@ -14,6 +17,9 @@ class CardWidget extends StatefulWidget {
     required this.rating,
     required this.subTitle,
     required this.price,
+    required this.onFavoriteSelected,
+    required this.onFavoriteRemoved,
+    required this.favourites,
   });
 
   @override
@@ -22,6 +28,18 @@ class CardWidget extends StatefulWidget {
 
 class _CardWidgetState extends State<CardWidget> {
   bool isFavorite = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Check if the current item is in the favorites list
+    isFavorite = widget.favourites.any((item) =>
+        item['imagePath'] == widget.imagePath &&
+        item['title'] == widget.title &&
+        item['rating'] == widget.rating &&
+        item['subTitle'] == widget.subTitle &&
+        item['price'] == widget.price);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +89,6 @@ class _CardWidgetState extends State<CardWidget> {
                 ),
               ),
             ),
-            // SizedBox(height: 4),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
               child: Column(
@@ -86,9 +103,7 @@ class _CardWidgetState extends State<CardWidget> {
                       color: Color(0xFF3C2F2F),
                     ),
                   ),
-                  SizedBox(
-                    height: 1,
-                  ),
+                  SizedBox(height: 1),
                   Text(
                     widget.subTitle,
                     style: TextStyle(
@@ -141,6 +156,23 @@ class _CardWidgetState extends State<CardWidget> {
                   onPressed: () {
                     setState(() {
                       isFavorite = !isFavorite;
+                      if (isFavorite) {
+                        widget.onFavoriteSelected(
+                          widget.imagePath,
+                          widget.title,
+                          widget.rating,
+                          widget.subTitle,
+                          widget.price,
+                        );
+                      } else {
+                        widget.onFavoriteRemoved(
+                          widget.imagePath,
+                          widget.title,
+                          widget.rating,
+                          widget.subTitle,
+                          widget.price,
+                        );
+                      }
                     });
                   },
                 ),
