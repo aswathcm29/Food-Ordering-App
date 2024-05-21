@@ -53,7 +53,7 @@ class _FrameWithButtonsState extends State<FrameWithButtons> {
                 selectedCategory = 'Burger';
               });
               widget.onCategorySelected('Burger'); // Call callback with 'Burger'
-              _scrollToSelectedButton(64); // Adjust position to scroll
+              _scrollToSelectedButton(30); // Adjust position to scroll
             },
           ),
           SizedBox(width: 14),
