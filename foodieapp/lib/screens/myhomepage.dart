@@ -22,7 +22,6 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   final List<Map<String, dynamic>> _favourites = [];
 
-
   // final List<Map<String, dynamic>> cardData2 = [
   //   {
   //     'imagePath': 'assets/images/sandwich.png',
@@ -155,16 +154,17 @@ class _MyHomePageState extends State<MyHomePage> {
     if (_selectedIndex == 3) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => FavouritePage(
-         favourites: _favourites,
-         onFavoriteRemoved: _removeFromFavourites,
-
-        )),
+        MaterialPageRoute(
+            builder: (context) => FavouritePage(
+                  favourites: _favourites,
+                  onFavoriteRemoved: _removeFromFavourites,
+                )),
       );
     }
   }
 
-   void _addToFavourites(String imagePath, String title, double rating, String subTitle, String price) {
+  void _addToFavourites(String imagePath, String title, double rating,
+      String subTitle, String price) {
     setState(() {
       _favourites.add({
         'imagePath': imagePath,
@@ -233,17 +233,16 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
- void filterData(String query) {
-  setState(() {
-    filteredData = cardData
-        .where((item) =>
-            item['title'].toLowerCase().contains(query.toLowerCase()) ||
-            item['subTitle'].toLowerCase().contains(query.toLowerCase()) ||
-            item['description'].toLowerCase().contains(query.toLowerCase()))
-        .toList();
-  });
-}
-
+  void filterData(String query) {
+    setState(() {
+      filteredData = cardData
+          .where((item) =>
+              item['title'].toLowerCase().contains(query.toLowerCase()) ||
+              item['subTitle'].toLowerCase().contains(query.toLowerCase()) ||
+              item['description'].toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
+  }
 
   void _logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -330,7 +329,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
- void _removeFromFavourites(Map<String, dynamic> item) {
+  void _removeFromFavourites(Map<String, dynamic> item) {
     setState(() {
       _favourites.remove(item);
     });
@@ -455,8 +454,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // print(_spokenWords);
         // _searchController.text = "";
         filterData("all");
-      }
-       else {
+      } else {
         _searchController.text = "";
         _searchController.text = _searchController.text.trim();
       }
@@ -609,41 +607,66 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               SizedBox(height: 20),
               Column(
-                children: List.generate(filteredData.length ~/ 2, (index) {
-                  final firstIndex = index * 2;
-                  final secondIndex = firstIndex + 1;
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 14),
-                    child: Row(
-                      children: [
-                        SizedBox(width: 4),
-                        CardWidget(
-                          imagePath: filteredData[firstIndex]['imagePath'],
-                          title: filteredData[firstIndex]['title'],
-                          subTitle: filteredData[firstIndex]['subTitle'],
-                          rating: filteredData[firstIndex]['rating'],
-                          price: filteredData[firstIndex]['price'],
-                          onFavoriteSelected: _addToFavourites,
-                          onFavoriteRemoved: _removeFromFavourites,
-                            favourites: [],
-                        ),
-                        SizedBox(width: 4),
-                        if (secondIndex < filteredData.length)
-                          CardWidget(
-                            imagePath: filteredData[secondIndex]['imagePath'],
-                            title: filteredData[secondIndex]['title'],
-                            subTitle: filteredData[secondIndex]['subTitle'],
-                            rating: filteredData[secondIndex]['rating'],
-                            price: filteredData[secondIndex]['price'],
-                            onFavoriteSelected: _addToFavourites,
-                            onFavoriteRemoved: _removeFromFavourites,
-                            favourites: [],
+                children: filteredData.isEmpty
+                    ? [
+                        SizedBox(height: 50),
+                        Center(
+                          child: Column(
+                            children: [
+                              Image.asset(
+                                'assets/images/no_items_found.gif', 
+                                height: 400,
+                              ),
+                              SizedBox(height: 20),
+                              Text(
+                                'No items found',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
-                      ],
-                    ),
-                  );
-                }),
-              ),
+                        ),
+                      ]
+                    : List.generate(filteredData.length ~/ 2, (index) {
+                        final firstIndex = index * 2;
+                        final secondIndex = firstIndex + 1;
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 14),
+                          child: Row(
+                            children: [
+                              SizedBox(width: 4),
+                              CardWidget(
+                                imagePath: filteredData[firstIndex]
+                                    ['imagePath'],
+                                title: filteredData[firstIndex]['title'],
+                                subTitle: filteredData[firstIndex]['subTitle'],
+                                rating: filteredData[firstIndex]['rating'],
+                                price: filteredData[firstIndex]['price'],
+                                onFavoriteSelected: _addToFavourites,
+                                onFavoriteRemoved: _removeFromFavourites,
+                                favourites: [],
+                              ),
+                              SizedBox(width: 4),
+                              if (secondIndex < filteredData.length)
+                                CardWidget(
+                                  imagePath: filteredData[secondIndex]
+                                      ['imagePath'],
+                                  title: filteredData[secondIndex]['title'],
+                                  subTitle: filteredData[secondIndex]
+                                      ['subTitle'],
+                                  rating: filteredData[secondIndex]['rating'],
+                                  price: filteredData[secondIndex]['price'],
+                                  onFavoriteSelected: _addToFavourites,
+                                  onFavoriteRemoved: _removeFromFavourites,
+                                  favourites: [],
+                                ),
+                            ],
+                          ),
+                        );
+                      }),
+              )
             ],
           ),
         ),
@@ -651,26 +674,23 @@ class _MyHomePageState extends State<MyHomePage> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home,color:Color(0xFF19C08E)),
+            icon: Icon(Icons.home, color: Color(0xFF19C08E)),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart,color:Color(0xFF19C08E)),
+            icon: Icon(Icons.shopping_cart, color: Color(0xFF19C08E)),
             label: 'Cart',
-           
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.add_card,color:Color(0xFF19C08E)),
+            icon: Icon(Icons.add_card, color: Color(0xFF19C08E)),
             label: 'Order Details',
-            
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.favorite,color:Color(0xFF19C08E)),
+            icon: Icon(Icons.favorite, color: Color(0xFF19C08E)),
             label: 'Favourites',
-          
           ),
         ],
-         currentIndex: _selectedIndex,
+        currentIndex: _selectedIndex,
         selectedItemColor: const Color.fromARGB(255, 113, 9, 9),
         onTap: _onItemTapped,
       ),
