@@ -164,7 +164,9 @@ class _CardWidgetState extends State<CardWidget> {
                           widget.subTitle,
                           widget.price,
                         );
-                      } else {
+                      }
+                       if(!isFavorite) {
+                       
                         widget.onFavoriteRemoved(
                           widget.imagePath,
                           widget.title,
