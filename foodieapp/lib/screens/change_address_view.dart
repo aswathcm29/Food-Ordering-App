@@ -1,145 +1,25 @@
-// import 'package:custom_map_markers/custom_map_markers.dart';
-// import 'package:flutter/foundation.dart';
-// import 'package:flutter/gestures.dart';
-// import 'package:flutter/material.dart';
-// import 'package:google_maps_flutter/google_maps_flutter.dart';
-
-// import 'package:foodieapp/screens/color_extension.dart';
-// import 'package:foodieapp/screens/round_textfield.dart';
-
-
-// class ChangeAddressView extends StatefulWidget {
-//   const ChangeAddressView({Key? key}) : super(key: key);
-
-//   @override
-//   State<ChangeAddressView> createState() => _ChangeAddressViewState();
-// }
-
-// class _ChangeAddressViewState extends State<ChangeAddressView> {
-//   final locations = const [
-//     LatLng(37.42796133580664, -122.085749655962),
-//   ];
-
-//   late List<MarkerData> _customMarkers;
-
-//   static const CameraPosition _kLake = CameraPosition(
-//     bearing: 192.8334901395799,
-//     target: LatLng(37.42796133580664, -122.085749655962),
-//     zoom: 14.151926040649414,
-//   );
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _customMarkers = [
-//       MarkerData(
-//         marker: Marker(
-//           markerId: const MarkerId('id-1'),
-//           position: locations[0],
-//         ),
-//         child: _customMarker('Everywhere\nis a Widgets', Colors.blue),
-//       ),
-//     ];
-//   }
-
-//   Widget _customMarker(String symbol, Color color) {
-//     return SizedBox(
-//       width: 100,
-//       child: Column(
-//         children: [
-//           Image.asset(
-//             'assets/images/map_pin.png',
-//             width: 35,
-//             fit: BoxFit.contain,
-//           )
-//         ],
-//       ),
-//     );
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         backgroundColor: TColor.white,
-//         leading: IconButton(
-//           onPressed: () {
-//             Navigator.pop(context);
-//           },
-//           icon: Image.asset("assets/images/btn_back.png", width: 20, height: 20),
-//         ),
-//         centerTitle: false,
-//         title: Text(
-//           "Change Address",
-//           style: TextStyle(
-//             color: TColor.primaryText,
-//             fontSize: 20,
-//             fontWeight: FontWeight.w800,
-//           ),
-//         ),
-//       ),
-//       body: Column(
-//         crossAxisAlignment: CrossAxisAlignment.stretch,
-//         children: [
-//           Expanded(
-//             child: CustomGoogleMapMarkerBuilder(
-//               customMarkers: _customMarkers,
-//               builder: (BuildContext context, Set<Marker>? markers) {
-//                 if (markers == null) {
-//                   return const Center(child: CircularProgressIndicator());
-//                 }
-//                 return GoogleMap(
-//                   mapType: MapType.normal,
-//                   initialCameraPosition: _kLake,
-//                   compassEnabled: false,
-//                   gestureRecognizers: Set()
-//                     ..add(Factory<PanGestureRecognizer>(
-//                       () => PanGestureRecognizer(),
-//                     )),
-//                   markers: markers,
-//                   onMapCreated: (_) {}, // Use a dummy callback if controller is not needed
-//                 );
-//               },
-//             ),
-//           ),
-//           Padding(
-//             padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 25),
-//             child: RoundTextfield(
-//               hintText: "Search Address",
-//               left: Icon(Icons.search, color: TColor.primaryText),
-//             ),
-//           ),
-//           Padding(
-//             padding: const EdgeInsets.symmetric(horizontal: 25),
-//             child: Row(
-//               children: [
-//                 Image.asset('assets/images/fav_icon.png', width: 35, height: 35),
-//                 const SizedBox(width: 8),
-//                 Expanded(
-//                   child: Text(
-//                     "Choose a saved place",
-//                     style: TextStyle(
-//                       color: TColor.primaryText,
-//                       fontSize: 14,
-//                       fontWeight: FontWeight.w600,
-//                     ),
-//                   ),
-//                 ),
-//                 Image.asset('assets/images/btn_next.png', width: 15, height: 15, color: TColor.primaryText),
-//               ],
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
-
-
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+const kGoogleApiKey =
+    "AIzaSyBRm_gVzAusC1Gj84PcYSnZkiV4qPRhzLE"; // Replace with your API key
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: ChangeAddressView(),
+    );
+  }
+}
 
 class ChangeAddressView extends StatefulWidget {
   @override
@@ -148,31 +28,185 @@ class ChangeAddressView extends StatefulWidget {
 
 class _ChangeAddressViewState extends State<ChangeAddressView> {
   final TextEditingController _searchController = TextEditingController();
-  final MapController _mapController = MapController();
+  GoogleMapController? _mapController;
   LatLng _center = LatLng(31.5497, 73.1369);
   String _errorMessage = '';
+  String _address = 'Search for a location or tap on the map';
+  final String _apiKey =
+      'AIzaSyBRm_gVzAusC1Gj84PcYSnZkiV4qPRhzLE'; // Add your Google API key
 
-  void _searchLocation() async {
+  @override
+  void initState() {
+    super.initState();
+    _determinePosition();
+  }
+
+  Future<void> _determinePosition() async {
     try {
-      List<Location> locations = await locationFromAddress(_searchController.text);
-      if (locations.isNotEmpty) {
-        Location location = locations.first;
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
         setState(() {
-          _center = LatLng(location.latitude, location.longitude);
-          _mapController.move(_center, 12.0);
-          _errorMessage = ''; // Clear any previous error message
+          _errorMessage = 'Location services are disabled.';
         });
+        return;
+      }
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          setState(() {
+            _errorMessage = 'Location permissions are denied';
+          });
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        setState(() {
+          _errorMessage = 'Location permissions are permanently denied.';
+        });
+        return;
+      }
+
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+      _center = LatLng(position.latitude, position.longitude);
+      _mapController?.animateCamera(CameraUpdate.newLatLngZoom(_center, 12));
+      _updateAddress(_center);
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Failed to determine position: $e';
+      });
+    }
+  }
+
+  Future<void> _updateAddress(LatLng position) async {
+    final url =
+        'https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.latitude},${position.longitude}&key=$_apiKey';
+
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['status'] == 'OK') {
+          String address = data['results'][0]['formatted_address'];
+          setState(() {
+            _address = address;
+          });
+          print('Address: $address');
+        } else {
+          setState(() {
+            _errorMessage = 'No address found';
+          });
+        }
       } else {
         setState(() {
-          _errorMessage = 'No location found';
+          _errorMessage =
+              'Error occurred while fetching address: ${response.statusCode}';
         });
       }
     } catch (e) {
       setState(() {
-        _errorMessage = 'Error occurred while searching location: $e';
+        _errorMessage = 'Error occurred while fetching address: $e';
       });
     }
   }
+
+  // Future<void> _showSaveAddressDialog(BuildContext context) async {
+  //   return showDialog<void>(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: Text('Save Address'),
+  //         content: TextField(
+  //           controller: _addressController,
+  //           decoration: InputDecoration(
+  //             hintText: 'Enter address',
+  //           ),
+  //         ),
+  //         actions: <Widget>[
+  //           TextButton(
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //             child: Text('Cancel'),
+  //           ),
+  //           TextButton(
+  //             onPressed: () {
+  //               // Save the address
+  //               String address = _addressController.text;
+  //               // Implement saving logic here
+  //               // For demonstration, print the address
+  //               print('Saved Address: $address');
+  //               Navigator.of(context).pop();
+  //             },
+  //             child: Text('Save'),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
+
+  void _onMapTapped(LatLng position) {
+    setState(() {
+      _center = position;
+    });
+    _updateAddress(position);
+  }
+
+  // Future<List<String>> _fetchSuggestions(String query) async {
+  //   try {
+  //     print('Fetching suggestions for query: $query');
+
+  //     String url =
+  //         'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$query&key=$_apiKey';
+  //     final response = await http.get(Uri.parse(url), headers: {
+  //       'Content-Type': 'application/json',
+  //       "Access-Control-Allow-Origin": "*",
+  //       "Access-Control-Allow-Methods": "POST, GET, OPTIONS, PUT, DELETE, HEAD",
+  //     });
+  //     print(response);
+  //     if (response.statusCode == 200) {
+  //       final suggestions = json.decode(response.body)['predictions'];
+  //       return List<String>.from(suggestions.map((p) => p['description']));
+  //     } else {
+  //       throw Exception('Failed to load suggestions');
+  //     }
+  //   } catch (e) {
+  //     print(e);
+  //     return [];
+  //   }
+  // }
+
+  // Future<void> _searchLocation(String selectedPlace) async {
+  //   print("Hi");
+  //   String url =
+  //       'https://maps.googleapis.com/maps/api/place/details/json?place_id=$selectedPlace&key=$_apiKey';
+  //   final response = await http.get(Uri.parse(url), headers: {
+  //     'Content-Type': 'application/json',
+  //     "Access-Control-Allow-Origin": "*",
+  //     "Access-Control-Allow-Methods": "POST, GET, OPTIONS, PUT, DELETE, HEAD",
+  //   });
+  //   print(response);
+  //   if (response.statusCode == 200) {
+  //     final details = json.decode(response.body)['result'];
+  //     final lat = details['geometry']['location']['lat'];
+  //     final lng = details['geometry']['location']['lng'];
+  //     LatLng newCenter = LatLng(lat, lng);
+  //     setState(() {
+  //       _center = newCenter;
+  //       _errorMessage = '';
+  //       _address = details['formatted_address'];
+  //     });
+  //     _mapController?.animateCamera(CameraUpdate.newLatLngZoom(newCenter, 12));
+  //   } else {
+  //     setState(() {
+  //       _errorMessage = 'No location found';
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -193,69 +227,24 @@ class _ChangeAddressViewState extends State<ChangeAddressView> {
             ),
             SizedBox(height: 10),
             Expanded(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: FlutterMap(
-                  mapController: _mapController,
-                  options: MapOptions(
-                    center: _center,
-                    zoom: 12.0,
-                  ),
-                  children: [
-                    TileLayer(
-                      urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      subdomains: ['a', 'b', 'c'],
-                    ),
-                    MarkerLayer(
-                      markers: [
-                        Marker(
-                          point: _center,
-                          width: 80.0,
-                          height: 80.0,
-                          builder: (ctx) => IconButton(
-                            icon: Icon(Icons.location_on, color: Colors.red, size: 40),
-                            onPressed: () {
-                              showDialog(
-                                context: ctx,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    title: Text('Foodie App'),
-                                    content: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text('Gmail: nisartalha99@gmail.com'),
-                                        Text('Phone: +92 319 4792547'),
-                                        SizedBox(height: 10),
-                                        GestureDetector(
-                                          onTap: () {
-                                            // Implement the link opening functionality here
-                                          },
-                                          child: Text(
-                                            'Visit my LinkedIn',
-                                            style: TextStyle(color: Colors.blue),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: Text('Close'),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+              child: GoogleMap(
+                onMapCreated: (controller) {
+                  _mapController = controller;
+                  _determinePosition();
+                },
+                initialCameraPosition: CameraPosition(
+                  target: _center,
+                  zoom: 12.0,
                 ),
+                onTap: _onMapTapped,
+                markers: {
+                  Marker(
+                    markerId: MarkerId("liveLocation"),
+                    position: _center,
+                    icon: BitmapDescriptor.defaultMarkerWithHue(
+                        BitmapDescriptor.hueRed),
+                  ),
+                },
               ),
             ),
             if (_errorMessage.isNotEmpty) ...[
@@ -265,26 +254,72 @@ class _ChangeAddressViewState extends State<ChangeAddressView> {
               ),
               SizedBox(height: 10),
             ],
+            // Padding(
+            //   padding: const EdgeInsets.all(8.0),
+            //   child: Autocomplete<String>(
+            //     optionsBuilder: (TextEditingValue textEditingValue) async {
+            //       if (textEditingValue.text.isEmpty) {
+            //         return const Iterable<String>.empty();
+            //       }
+            //       try {
+            //         final suggestions =
+            //             await _fetchSuggestions(textEditingValue.text);
+            //         return suggestions;
+            //       } catch (e) {
+            //         // Handle error
+            //         return const Iterable<String>.empty();
+            //       }
+            //     },
+            //     onSelected: (String selectedPlace) {
+            //       _searchLocation(selectedPlace);
+            //     },
+            //     fieldViewBuilder: (BuildContext context,
+            //         TextEditingController textEditingController,
+            //         FocusNode focusNode,
+            //         VoidCallback onFieldSubmitted) {
+            //       return TextField(
+            //         controller: textEditingController,
+            //         focusNode: focusNode,
+            //         decoration: InputDecoration(
+            //           hintText: 'Enter location or coordinates',
+            //           border: OutlineInputBorder(),
+            //         ),
+            //         onChanged: (value) {
+            //           // You can perform additional actions when the text changes
+            //         },
+            //         onSubmitted: (value) {
+            //           onFieldSubmitted();
+            //         },
+            //       );
+            //     },
+            //     optionsViewBuilder: (BuildContext context,
+            //         AutocompleteOnSelected<String> onSelected,
+            //         Iterable<String> options) {
+            //       return Align(
+            //         alignment: Alignment.topLeft,
+            //         child: Material(
+            //           elevation: 4.0,
+            //           child: SizedBox(
+            //             height: 200.0,
+            //             child: ListView(
+            //               children: options
+            //                   .map((String option) => ListTile(
+            //                         title: Text(option),
+            //                         onTap: () {
+            //                           onSelected(option);
+            //                         },
+            //                       ))
+            //                   .toList(),
+            //             ),
+            //           ),
+            //         ),
+            //       );
+            //     },
+            //   ),
+            // ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _searchController,
-                      decoration: InputDecoration(
-                        hintText: "Enter location",
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  ElevatedButton(
-                    onPressed: _searchLocation,
-                    child: Text("Search"),
-                  ),
-                ],
-              ),
+              child: Text(_address),
             ),
           ],
         ),

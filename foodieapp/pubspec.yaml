@@ -40,7 +40,7 @@ dependencies:
   google_maps_flutter_web: ^0.5.4+3
   flutter_map: ^4.0.0
   latlong2: ^0.8.2
-  geocoding: ^2.0.4
+  geocoding: ^3.0.0
   path_provider: ^2.0.1
   open_file: ^3.1.0
   intl: ^0.17.0
@@ -53,12 +53,19 @@ dependencies:
   firebase_storage: ^11.6.9
   motion_toast: ^2.9.1
   speech_to_text: ^6.3.0
+  geolocator: ^11.1.0
+  location: ^6.0.2
+  http: ^0.13.6
+  google_maps_webservice: ^0.0.20-nullsafety.5
+  google_api_headers: ^3.7.3
+  flutter_typeahead: ^5.2.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^2.0.0
+  # google_maps_flutter_web: ^0.3.1+4
 
 flutter:
   uses-material-design: true
