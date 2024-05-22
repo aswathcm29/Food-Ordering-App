@@ -233,14 +233,17 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void filterData(String query) {
-    setState(() {
-      filteredData = cardData
-          .where((item) =>
-              item['title'].toLowerCase().contains(query.toLowerCase()))
-          .toList();
-    });
-  }
+ void filterData(String query) {
+  setState(() {
+    filteredData = cardData
+        .where((item) =>
+            item['title'].toLowerCase().contains(query.toLowerCase()) ||
+            item['subTitle'].toLowerCase().contains(query.toLowerCase()) ||
+            item['description'].toLowerCase().contains(query.toLowerCase()))
+        .toList();
+  });
+}
+
 
   void _logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
