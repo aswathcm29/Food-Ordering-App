@@ -21,6 +21,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   final List<Map<String, dynamic>> _favourites = [];
+  bool _isListening = false;
 
   // final List<Map<String, dynamic>> cardData2 = [
   //   {
@@ -372,27 +373,41 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _startListening() async {
-    try {
-      bool available = await _speechToText.initialize();
-      if (available && !_speechToText.isListening) {
-        await _speechToText.listen(
-          onResult: _onSpeechResult,
-          listenFor: Duration(seconds: 10), // Adjust duration as needed
-        );
-      } else if (_speechToText.isListening) {
-        print('Speech recognition is already active.');
-      } else {
-        print('Speech recognition not available');
-      }
-    } catch (e) {
-      print('Error starting speech recognition: $e');
+  try {
+    bool available = await _speechToText.initialize();
+    if (available && !_speechToText.isListening) {
+      await _speechToText.listen(
+        onResult: _onSpeechResult,
+        listenFor: Duration(seconds: 10),
+      );
+
+      setState(() {
+        _isListening = true; // Update state to indicate listening
+      });
+
+      // Schedule a task to stop listening after 10 seconds
+      Future.delayed(Duration(seconds: 10), () {
+        if (_isListening) {
+          _stopListening(); // Call stop listening method after 10 seconds
+        }
+      });
+    } else if (_speechToText.isListening) {
+      print('Speech recognition is already active.');
+    } else {
+      print('Speech recognition not available');
     }
-    setState(() {});
+  } catch (e) {
+    print('Error starting speech recognition: $e');
   }
+  setState(() {});
+}
 
   void _stopListening() async {
     await _speechToText.stop();
-    setState(() {});
+    setState(() {
+      _isListening = false;
+      
+    });
   }
 
   void _onSpeechResult(SpeechRecognitionResult result) {
@@ -568,10 +583,17 @@ class _MyHomePageState extends State<MyHomePage> {
                                   color: Color(0xFF3C2F2F),
                                 ),
                                 suffixIcon: GestureDetector(
-                                  onTap: _startListening,
+                                  onTap: () {
+                                    if (_isListening) {
+                                      _stopListening();
+                                    } else {
+                                      _startListening();
+                                    }
+                                  },
                                   child: Icon(
-                                    Icons.mic,
-                                    color: Colors.grey,
+                                    _isListening ? Icons.mic : Icons.mic_off,
+                                    color:
+                                        _isListening ? Colors.red : Colors.grey,
                                   ),
                                 ),
                               ),
@@ -614,7 +636,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           child: Column(
                             children: [
                               Image.asset(
-                                'assets/images/no_items_found.gif', 
+                                'assets/images/no_items_found.gif',
                                 height: 400,
                               ),
                               SizedBox(height: 20),
