@@ -1,9 +1,14 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
+import 'package:foodieapp/screens/checkoutview.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 const kGoogleApiKey =
     "AIzaSyBRm_gVzAusC1Gj84PcYSnZkiV4qPRhzLE"; // Replace with your API key
@@ -32,13 +37,15 @@ class _ChangeAddressViewState extends State<ChangeAddressView> {
   LatLng _center = LatLng(31.5497, 73.1369);
   String _errorMessage = '';
   String _address = 'Search for a location or tap on the map';
-  final String _apiKey =
-      'AIzaSyBRm_gVzAusC1Gj84PcYSnZkiV4qPRhzLE'; // Add your Google API key
+  final String _apiKey = kGoogleApiKey;
+  String? _uid;
 
   @override
   void initState() {
     super.initState();
     _determinePosition();
+    _loadUid();
+    
   }
 
   Future<void> _determinePosition() async {
@@ -81,6 +88,14 @@ class _ChangeAddressViewState extends State<ChangeAddressView> {
     }
   }
 
+  Future<void> _loadUid() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _uid = prefs.getString('uid');
+    });
+    print(_uid);
+  }
+
   Future<void> _updateAddress(LatLng position) async {
     final url =
         'https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.latitude},${position.longitude}&key=$_apiKey';
@@ -113,42 +128,6 @@ class _ChangeAddressViewState extends State<ChangeAddressView> {
     }
   }
 
-  // Future<void> _showSaveAddressDialog(BuildContext context) async {
-  //   return showDialog<void>(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         title: Text('Save Address'),
-  //         content: TextField(
-  //           controller: _addressController,
-  //           decoration: InputDecoration(
-  //             hintText: 'Enter address',
-  //           ),
-  //         ),
-  //         actions: <Widget>[
-  //           TextButton(
-  //             onPressed: () {
-  //               Navigator.of(context).pop();
-  //             },
-  //             child: Text('Cancel'),
-  //           ),
-  //           TextButton(
-  //             onPressed: () {
-  //               // Save the address
-  //               String address = _addressController.text;
-  //               // Implement saving logic here
-  //               // For demonstration, print the address
-  //               print('Saved Address: $address');
-  //               Navigator.of(context).pop();
-  //             },
-  //             child: Text('Save'),
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
-
   void _onMapTapped(LatLng position) {
     setState(() {
       _center = position;
@@ -156,57 +135,72 @@ class _ChangeAddressViewState extends State<ChangeAddressView> {
     _updateAddress(position);
   }
 
-  // Future<List<String>> _fetchSuggestions(String query) async {
-  //   try {
-  //     print('Fetching suggestions for query: $query');
+  void _showSaveAddressDialog(BuildContext context) {
+    TextEditingController addressController = TextEditingController();
+    addressController.text = _address;
 
-  //     String url =
-  //         'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$query&key=$_apiKey';
-  //     final response = await http.get(Uri.parse(url), headers: {
-  //       'Content-Type': 'application/json',
-  //       "Access-Control-Allow-Origin": "*",
-  //       "Access-Control-Allow-Methods": "POST, GET, OPTIONS, PUT, DELETE, HEAD",
-  //     });
-  //     print(response);
-  //     if (response.statusCode == 200) {
-  //       final suggestions = json.decode(response.body)['predictions'];
-  //       return List<String>.from(suggestions.map((p) => p['description']));
-  //     } else {
-  //       throw Exception('Failed to load suggestions');
-  //     }
-  //   } catch (e) {
-  //     print(e);
-  //     return [];
-  //   }
-  // }
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Save Address'),
+          content: TextField(
+            controller: addressController,
+            decoration: InputDecoration(
+              hintText: 'Enter address',
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Replace with actual user ID
+                setState(() {
+                  _address = addressController.text;
+                  _saveAddress(_uid!, _address);
+                });
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                      content:
+                          Text("Address saved: ${addressController.text}")),
+                );
+              },
+              child: Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
-  // Future<void> _searchLocation(String selectedPlace) async {
-  //   print("Hi");
-  //   String url =
-  //       'https://maps.googleapis.com/maps/api/place/details/json?place_id=$selectedPlace&key=$_apiKey';
-  //   final response = await http.get(Uri.parse(url), headers: {
-  //     'Content-Type': 'application/json',
-  //     "Access-Control-Allow-Origin": "*",
-  //     "Access-Control-Allow-Methods": "POST, GET, OPTIONS, PUT, DELETE, HEAD",
-  //   });
-  //   print(response);
-  //   if (response.statusCode == 200) {
-  //     final details = json.decode(response.body)['result'];
-  //     final lat = details['geometry']['location']['lat'];
-  //     final lng = details['geometry']['location']['lng'];
-  //     LatLng newCenter = LatLng(lat, lng);
-  //     setState(() {
-  //       _center = newCenter;
-  //       _errorMessage = '';
-  //       _address = details['formatted_address'];
-  //     });
-  //     _mapController?.animateCamera(CameraUpdate.newLatLngZoom(newCenter, 12));
-  //   } else {
-  //     setState(() {
-  //       _errorMessage = 'No location found';
-  //     });
-  //   }
-  // }
+  Future<void> _saveAddress(String uid, String address) async {
+    try {
+      await FirebaseFirestore.instance.collection('UserData').doc(uid).set({
+        'address': address,
+      }, SetOptions(merge: true));
+
+      print('Address saved successfully');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Address saved successfully"),
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+      // Navigate to order page after a short delay
+      Future.delayed(Duration(seconds: 2), () {
+        Navigator.pop(context, address);
+      });
+    } catch (e) {
+      print('Failed to save address: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -254,72 +248,16 @@ class _ChangeAddressViewState extends State<ChangeAddressView> {
               ),
               SizedBox(height: 10),
             ],
-            // Padding(
-            //   padding: const EdgeInsets.all(8.0),
-            //   child: Autocomplete<String>(
-            //     optionsBuilder: (TextEditingValue textEditingValue) async {
-            //       if (textEditingValue.text.isEmpty) {
-            //         return const Iterable<String>.empty();
-            //       }
-            //       try {
-            //         final suggestions =
-            //             await _fetchSuggestions(textEditingValue.text);
-            //         return suggestions;
-            //       } catch (e) {
-            //         // Handle error
-            //         return const Iterable<String>.empty();
-            //       }
-            //     },
-            //     onSelected: (String selectedPlace) {
-            //       _searchLocation(selectedPlace);
-            //     },
-            //     fieldViewBuilder: (BuildContext context,
-            //         TextEditingController textEditingController,
-            //         FocusNode focusNode,
-            //         VoidCallback onFieldSubmitted) {
-            //       return TextField(
-            //         controller: textEditingController,
-            //         focusNode: focusNode,
-            //         decoration: InputDecoration(
-            //           hintText: 'Enter location or coordinates',
-            //           border: OutlineInputBorder(),
-            //         ),
-            //         onChanged: (value) {
-            //           // You can perform additional actions when the text changes
-            //         },
-            //         onSubmitted: (value) {
-            //           onFieldSubmitted();
-            //         },
-            //       );
-            //     },
-            //     optionsViewBuilder: (BuildContext context,
-            //         AutocompleteOnSelected<String> onSelected,
-            //         Iterable<String> options) {
-            //       return Align(
-            //         alignment: Alignment.topLeft,
-            //         child: Material(
-            //           elevation: 4.0,
-            //           child: SizedBox(
-            //             height: 200.0,
-            //             child: ListView(
-            //               children: options
-            //                   .map((String option) => ListTile(
-            //                         title: Text(option),
-            //                         onTap: () {
-            //                           onSelected(option);
-            //                         },
-            //                       ))
-            //                   .toList(),
-            //             ),
-            //           ),
-            //         ),
-            //       );
-            //     },
-            //   ),
-            // ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(_address),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                onPressed: () => _showSaveAddressDialog(context),
+                child: Text("Save Address"),
+              ),
             ),
           ],
         ),

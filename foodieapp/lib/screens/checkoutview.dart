@@ -22,8 +22,8 @@ class CheckoutView extends StatefulWidget {
 class _CheckoutViewState extends State<CheckoutView> {
   List paymentArr = [
     {"name": "Cash on delivery", "icon": "assets/images/cash.png"},
-    {"name": "**** **** **** 2187", "icon": "assets/images/visa_icon.png"},
-    {"name": "test@gmail.com", "icon": "assets/images/paypal.png"},
+    // {"name": "**** **** **** 2187", "icon": "assets/images/visa_icon.png"},
+    // {"name": "test@gmail.com", "icon": "assets/images/paypal.png"},
   ];
 
   int selectMethod = -1;
@@ -36,6 +36,7 @@ class _CheckoutViewState extends State<CheckoutView> {
   void initState() {
     super.initState();
     _fetchUserData();
+    // _navigateToChangeAddressView();
   }
 
   Future<void> _fetchUserData() async {
@@ -79,6 +80,20 @@ class _CheckoutViewState extends State<CheckoutView> {
         deliveryEmail = "Error loading email";
         deliveryName = "Error loading name";
         deliveryPhone = "Error loading contact";
+      });
+    }
+  }
+
+  void _navigateToChangeAddressView() async {
+    final newAddress = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ChangeAddressView()),
+    );
+
+    // Update the delivery address if a new address is returned
+    if (newAddress != null) {
+      setState(() {
+        deliveryAddress = newAddress;
       });
     }
   }
@@ -225,12 +240,13 @@ class _CheckoutViewState extends State<CheckoutView> {
                         const SizedBox(width: 4),
                         TextButton(
                           onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ChangeAddressView(),
-                              ),
-                            );
+                            _navigateToChangeAddressView();
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder: (context) => ChangeAddressView(),
+                            //   ),
+                            // );
                           },
                           child: Text(
                             "Change",
