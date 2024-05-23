@@ -1,9 +1,9 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:foodieapp/screens/checkoutview.dart';
+//import 'package:foodieapp/screens/checkoutview.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geocoding/geocoding.dart';
+//import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -32,7 +32,6 @@ class ChangeAddressView extends StatefulWidget {
 }
 
 class _ChangeAddressViewState extends State<ChangeAddressView> {
-  final TextEditingController _searchController = TextEditingController();
   GoogleMapController? _mapController;
   LatLng _center = LatLng(31.5497, 73.1369);
   String _errorMessage = '';

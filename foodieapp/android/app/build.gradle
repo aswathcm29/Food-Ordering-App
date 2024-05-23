@@ -26,6 +26,8 @@ if (flutterVersionName == null) {
 }
 
 android {
+    aaptOptions.cruncherEnabled = false
+    aaptOptions.useNewCruncher = false
     compileSdkVersion 34
     namespace "com.example.foodieapp"
     compileSdkVersion flutter.compileSdkVersion
@@ -49,7 +51,7 @@ android {
         applicationId "com.example.foodieapp"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion 20
+        minSdkVersion 23
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

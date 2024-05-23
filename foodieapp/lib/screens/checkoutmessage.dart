@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foodieapp/screens/orderdetails.dart';
 import 'package:foodieapp/screens/round_button.dart';
 
 import 'package:foodieapp/screens/color_extension.dart';
@@ -81,7 +82,12 @@ class _CheckoutMessageViewState extends State<CheckoutMessageView> {
             const SizedBox(
               height: 35,
             ),
-            RoundButton(title: "Track My Order", onPressed: () {}),
+            RoundButton(title: "Track My Order", onPressed: () {
+               Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => OrderDetails()),
+      );
+            }),
             TextButton(
               onPressed: goback,
               child: Text(
