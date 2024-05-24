@@ -473,7 +473,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // _searchController.text = "";
         filterData("all");
       } else {
-        
+         filterData("");
         _searchController.text = "";
         _searchController.text = _searchController.text.trim();
       }
