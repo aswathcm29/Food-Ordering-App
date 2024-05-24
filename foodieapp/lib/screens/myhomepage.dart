@@ -333,6 +333,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _removeFromFavourites(Map<String, dynamic> item) {
     setState(() {
       _favourites.remove(item);
+    
     });
   }
 

@@ -137,125 +137,127 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: <Widget>[
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.white,
+        child: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.white,
+                ),
+                child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Image.asset(
+                          'assets/images/Star.png',
+                          height: 45,
+                          width: 45,
+                        ),
+                      ],
+                    )),
               ),
-              child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Image.asset(
-                        'assets/images/star.png',
-                        height: 45,
-                        width: 45,
-                      ),
-                    ],
-                  )),
-            ),
-            SizedBox(height: 20),
-            Text(
-              'Foodie',
-              style: TextStyle(
-                fontFamily: 'Lobster',
-                fontSize: 45,
-                fontWeight: FontWeight.w400,
-                height: 60.61 / 45,
-                color: Color(0xFF3C2F2F),
-              ),
-            ),
-            SizedBox(height: 20),
-            Container(
-              width: double.infinity,
-              child: Text(
-                'Login',
-                textAlign: TextAlign.left,
+              SizedBox(height: 20),
+              Text(
+                'Foodie',
                 style: TextStyle(
-                  fontFamily: "poppins",
-                  fontSize: 35,
-                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Lobster',
+                  fontSize: 45,
+                  fontWeight: FontWeight.w400,
                   height: 60.61 / 45,
                   color: Color(0xFF3C2F2F),
                 ),
               ),
-            ),
-            SizedBox(height: 20),
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(
-                labelText: 'Email',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 40),
-            TextField(
-              controller: _passwordController,
-              obscureText: !_isPasswordVisible,
-              decoration: InputDecoration(
-                labelText: 'Password',
-                border: OutlineInputBorder(),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _isPasswordVisible
-                        ? Icons.visibility
-                        : Icons.visibility_off,
+              SizedBox(height: 20),
+              Container(
+                width: double.infinity,
+                child: Text(
+                  'Login',
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    fontFamily: "poppins",
+                    fontSize: 35,
+                    fontWeight: FontWeight.bold,
+                    height: 60.61 / 45,
+                    color: Color(0xFF3C2F2F),
                   ),
-                  onPressed: () {
-                    setState(() {
-                      _isPasswordVisible = !_isPasswordVisible;
-                    });
-                  },
                 ),
               ),
-            ),
-            SizedBox(height: 40),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SignUpScreen()),
-                    );
-                  },
-                  child: Text('New User? Sign Up'),
+              SizedBox(height: 20),
+              TextField(
+                controller: _emailController,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  border: OutlineInputBorder(),
                 ),
-              ],
-            ),
-            SizedBox(height: 20),
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.black,
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextButton(
-                  style: ButtonStyle(
-                    foregroundColor: MaterialStateProperty.all(Colors.white),
+              SizedBox(height: 40),
+              TextField(
+                controller: _passwordController,
+                obscureText: !_isPasswordVisible,
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  border: OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
+                    },
                   ),
-                  onPressed: () {
-                    LoginHandler();
-                  },
-                  child: Text('Login'),
                 ),
               ),
-            ),
-            SizedBox(height: 20),
-            Text("OR"),
-            SizedBox(height: 20),
-            SignInButton(
-              Buttons.google,
-              onPressed: _signInWithGoogle,
-            ),
-          ],
+              SizedBox(height: 40),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SignUpScreen()),
+                      );
+                    },
+                    child: Text('New User? Sign Up'),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.black,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextButton(
+                    style: ButtonStyle(
+                      foregroundColor: MaterialStateProperty.all(Colors.white),
+                    ),
+                    onPressed: () {
+                      LoginHandler();
+                    },
+                    child: Text('Login'),
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+              Text("OR"),
+              SizedBox(height: 20),
+              SignInButton(
+                Buttons.google,
+                onPressed: _signInWithGoogle,
+              ),
+            ],
+          ),
         ),
       ),
     );

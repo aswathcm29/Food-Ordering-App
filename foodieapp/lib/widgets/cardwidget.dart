@@ -59,10 +59,10 @@ class _CardWidgetState extends State<CardWidget> {
         );
       },
       child: Container(
-        width: 170,
-        height: 260,
-        padding: EdgeInsets.only(right: 14, bottom: 10),
-        margin: EdgeInsets.only(right: 14),
+        width: 150,
+        height: 300,
+        padding: EdgeInsets.only(right: 6, bottom: 10),
+        margin: EdgeInsets.only(right: 6,left: 2),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           color: Colors.white,
