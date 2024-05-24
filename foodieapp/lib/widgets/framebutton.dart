@@ -117,7 +117,7 @@ class _FrameWithButtonsState extends State<FrameWithButtons> {
               setState(() {
                 selectedCategory = 'Sandwich';
               });
-              widget.onCategorySelected('Sandwich'); // Call callback with 'Sandwich'
+              widget.onCategorySelected('Sandwich'); // Call callback with 'Pasta'
               _scrollToSelectedButton(500); // Adjust position to scroll
             },
           ),

@@ -276,10 +276,14 @@ class _MyHomePageState extends State<MyHomePage> {
         filteredData = cardData;
       } else {
         filteredData = cardData
-            .where((item) => item['title']
-                .toString()
-                .toLowerCase()
-                .contains(category.toLowerCase()))
+            .where((item) =>
+                item['title'].toLowerCase().contains(category.toLowerCase()) ||
+                item['subTitle']
+                    .toLowerCase()
+                    .contains(category.toLowerCase()) ||
+                item['description']
+                    .toLowerCase()
+                    .contains(category.toLowerCase()))
             .toList();
       }
     });
@@ -333,7 +337,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void _removeFromFavourites(Map<String, dynamic> item) {
     setState(() {
       _favourites.remove(item);
-    
     });
   }
 
@@ -374,47 +377,46 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _startListening() async {
-  try {
-    bool available = await _speechToText.initialize();
-    if (available && !_speechToText.isListening) {
-      await _speechToText.listen(
-        onResult: _onSpeechResult,
-        listenFor: Duration(seconds: 10),
-      );
+    try {
+      bool available = await _speechToText.initialize();
+      if (available && !_speechToText.isListening) {
+        await _speechToText.listen(
+          onResult: _onSpeechResult,
+          listenFor: Duration(seconds: 10),
+        );
 
-      setState(() {
-        _isListening = true; // Update state to indicate listening
-      });
+        setState(() {
+          _isListening = true; // Update state to indicate listening
+        });
 
-      // Schedule a task to stop listening after 10 seconds
-      Future.delayed(Duration(seconds: 10), () {
-        if (_isListening) {
-          _stopListening(); // Call stop listening method after 10 seconds
-        }
-      });
-    } else if (_speechToText.isListening) {
-      print('Speech recognition is already active.');
-    } else {
-      print('Speech recognition not available');
+        // Schedule a task to stop listening after 10 seconds
+        Future.delayed(Duration(seconds: 10), () {
+          if (_isListening) {
+            _stopListening(); // Call stop listening method after 10 seconds
+          }
+        });
+      } else if (_speechToText.isListening) {
+        print('Speech recognition is already active.');
+      } else {
+        print('Speech recognition not available');
+      }
+    } catch (e) {
+      print('Error starting speech recognition: $e');
     }
-  } catch (e) {
-    print('Error starting speech recognition: $e');
+    setState(() {});
   }
-  setState(() {});
-}
 
   void _stopListening() async {
     await _speechToText.stop();
     setState(() {
       _isListening = false;
-      
     });
   }
 
   void _onSpeechResult(SpeechRecognitionResult result) {
     setState(() {
       String _spokenWords = result.recognizedWords.toLowerCase();
-      // print(_spokenWords);
+      print(_spokenWords);
       if (_spokenWords.contains('pizza')) {
         // _searchController.text = "pizza";
         // _searchController.text = _searchController.text.trim();
@@ -431,7 +433,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // _searchController.text = "";
         filterData("burger");
       }
-      if (_spokenWords.contains('fries')) {
+      if (_spokenWords.contains('price')) {
         // _searchController.text = "burger";
         // _searchController.text = _searchController.text.trim();
 
@@ -471,6 +473,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // _searchController.text = "";
         filterData("all");
       } else {
+        
         _searchController.text = "";
         _searchController.text = _searchController.text.trim();
       }
@@ -652,7 +655,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                         ),
                       ]
-                    : List.generate(filteredData.length ~/ 2, (index) {
+                    : List.generate((filteredData.length / 2).ceil(), (index) {
                         final firstIndex = index * 2;
                         final secondIndex = firstIndex + 1;
                         return Padding(
@@ -660,36 +663,45 @@ class _MyHomePageState extends State<MyHomePage> {
                           child: Row(
                             children: [
                               SizedBox(width: 4),
-                              CardWidget(
-                                imagePath: filteredData[firstIndex]
-                                    ['imagePath'],
-                                title: filteredData[firstIndex]['title'],
-                                subTitle: filteredData[firstIndex]['subTitle'],
-                                rating: filteredData[firstIndex]['rating'],
-                                price: filteredData[firstIndex]['price'],
-                                onFavoriteSelected: _addToFavourites,
-                                onFavoriteRemoved: _removeFromFavourites,
-                                favourites: [],
-                              ),
-                              SizedBox(width: 4),
-                              if (secondIndex < filteredData.length)
-                                CardWidget(
-                                  imagePath: filteredData[secondIndex]
+                              Expanded(
+                                child: CardWidget(
+                                  imagePath: filteredData[firstIndex]
                                       ['imagePath'],
-                                  title: filteredData[secondIndex]['title'],
-                                  subTitle: filteredData[secondIndex]
+                                  title: filteredData[firstIndex]['title'],
+                                  subTitle: filteredData[firstIndex]
                                       ['subTitle'],
-                                  rating: filteredData[secondIndex]['rating'],
-                                  price: filteredData[secondIndex]['price'],
+                                  rating: filteredData[firstIndex]['rating'],
+                                  price: filteredData[firstIndex]['price'],
                                   onFavoriteSelected: _addToFavourites,
                                   onFavoriteRemoved: _removeFromFavourites,
                                   favourites: [],
                                 ),
+                              ),
+                              SizedBox(width: 4),
+                              if (secondIndex < filteredData.length)
+                                Expanded(
+                                  child: CardWidget(
+                                    imagePath: filteredData[secondIndex]
+                                        ['imagePath'],
+                                    title: filteredData[secondIndex]['title'],
+                                    subTitle: filteredData[secondIndex]
+                                        ['subTitle'],
+                                    rating: filteredData[secondIndex]['rating'],
+                                    price: filteredData[secondIndex]['price'],
+                                    onFavoriteSelected: _addToFavourites,
+                                    onFavoriteRemoved: _removeFromFavourites,
+                                    favourites: [],
+                                  ),
+                                ),
+                              if (secondIndex >= filteredData.length)
+                                Expanded(
+                                    child:
+                                        Container()), // Placeholder for layout alignment
                             ],
                           ),
                         );
                       }),
-              )
+              ),
             ],
           ),
         ),
