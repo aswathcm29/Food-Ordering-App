@@ -271,48 +271,55 @@ class _InvoicePageState extends State<InvoicePage> {
   }
 
   Widget buildContactInfo(Customer customer) {
-    return Card(
-      elevation: 4,
-      child: Padding(
-        padding: EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Card(
+        elevation: 4,
+        child: Padding(
+          padding: EdgeInsets.all(12),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Customer Information',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                SingleChildScrollView(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Customer Information',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      Icon(Icons.contact_mail, color: Colors.red),
+                    ],
+                  ),
                 ),
-                Icon(Icons.contact_mail, color: Colors.red),
+                SizedBox(height: 10),
+                Row(
+                  children: [
+                    Icon(Icons.person, color: Colors.blue),
+                    SizedBox(width: 10),
+                    Text('Customer Name: ${customer.name}'),
+                  ],
+                ),
+                SizedBox(height: 10),
+                Row(
+                  children: [
+                    Icon(Icons.email, color: Colors.blue),
+                    SizedBox(width: 10),
+                    Text('Customer Email: ${customer.email}'),
+                  ],
+                ),
+                SizedBox(height: 10),
+                Row(
+                  children: [
+                    Icon(Icons.location_on, color: Colors.blue),
+                    SizedBox(width: 10),
+                    Text('Customer Address: ${customer.address}'),
+                  ],
+                ),
               ],
             ),
-            SizedBox(height: 10),
-            Row(
-              children: [
-                Icon(Icons.person, color: Colors.blue),
-                SizedBox(width: 10),
-                Text('Customer Name: ${customer.name}'),
-              ],
-            ),
-            SizedBox(height: 10),
-            Row(
-              children: [
-                Icon(Icons.email, color: Colors.blue),
-                SizedBox(width: 10),
-                Text('Customer Email: ${customer.email}'),
-              ],
-            ),
-            SizedBox(height: 10),
-            Row(
-              children: [
-                Icon(Icons.location_on, color: Colors.blue),
-                SizedBox(width: 10),
-                Text('Customer Address: ${customer.address}'),
-              ],
-            ),
-          ],
+          ),
         ),
       ),
     );

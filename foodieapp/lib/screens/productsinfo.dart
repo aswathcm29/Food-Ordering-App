@@ -51,7 +51,7 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
             top: 70,
             left: 19,
             child: Container(
-              width: 350,
+              width: 320,
               height: 320,
               child: Image.network(
                 widget.imagePath,
@@ -63,7 +63,7 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
             top: 400,
             left: 19,
             child: Text(
-              widget.title + " " + widget.subTitle,
+              widget.title ,
               style: TextStyle(
                 fontFamily: 'Roboto',
                 fontSize: 25,
@@ -86,20 +86,7 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
               },
             ),
           ),
-          Positioned(
-            top: 30,
-            right: 20,
-            child: IconButton(
-              icon: Icon(
-                Icons.search,
-                size: 30,
-                color: Color(0xFF3C2F2F),
-              ),
-              onPressed: () {
-                // Implement search functionality here
-              },
-            ),
-          ),
+         
           Positioned(
             top: 440,
             left: 19,
@@ -135,26 +122,14 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
               ),
             ),
           ),
-          Positioned(
-            top: 438,
-            left: 84,
-            child: Text(
-              '14 mins',
-              style: TextStyle(
-                fontFamily: 'Roboto',
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF808080),
-              ),
-            ),
-          ),
+          
           Positioned(
             top: 470,
             left: 19,
             child: Container(
-              width: 370,
+              width: 340,
               child: Text(
-                'Enjoy our delicious ${widget.title}, made with a savory blend of fresh vegetables and herbs, topped with crisp lettuce, juicy tomatoes, and tangy pickles, all served on a soft, toasted bun.',
+                'Enjoy our delicious ${widget.title}, made with a savory blend of fresh vegetables and herbs, topped with crisp lettuce, juicy tomatoes.',
                 style: TextStyle(
                   fontFamily: 'Roboto',
                   fontSize: 16,
@@ -243,9 +218,9 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
           ),
           Positioned(
             top: 600,
-            left: 260,
+            left: 240,
             child: Container(
-              width: 50,
+              width: 60,
               height: 19,
               child: Text(
                 'Portion',
@@ -260,7 +235,7 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
           ),
           Positioned(
             top: 625,
-            left: 260,
+            left: 240,
             child: Container(
               width: 40,
               height: 40,
@@ -293,7 +268,7 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
           ),
           Positioned(
             top: 625,
-            left: 335,
+            left: 310,
             child: Container(
               width: 40,
               height: 40,
@@ -326,7 +301,7 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
           ),
           Positioned(
             top: 625,
-            left: 297,
+            left: 275,
             child: Container(
               width: 40,
               height: 40,
@@ -380,9 +355,9 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
           ),
           Positioned(
             top: 690,
-            left: 172,
+            left: 170,
             child: Container(
-              width: 200,
+              width: 180,
               height: 60,
               decoration: BoxDecoration(
                 color: Color(0xFF3C2F2F),
