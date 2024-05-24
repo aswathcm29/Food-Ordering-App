@@ -193,7 +193,9 @@ class _AddToCartState extends State<AddToCart> {
                             children: [
                               Container(
                                 decoration: BoxDecoration(
-                                  color: Color(0xFF19C08E),
+                                  color: cartItems[index]['quantity'] > 1
+                                      ? Color(0xFF19C08E)
+                                      : Colors.red,
                                   borderRadius: BorderRadius.circular(20),
                                   boxShadow: [
                                     BoxShadow(
@@ -207,12 +209,14 @@ class _AddToCartState extends State<AddToCart> {
                                 width: 40,
                                 height: 40,
                                 child: InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      cartItems[index]['quantity']--;
-                                      _saveCartItems();
-                                    });
-                                  },
+                                  onTap: cartItems[index]['quantity'] > 1
+                                      ? () {
+                                          setState(() {
+                                            cartItems[index]['quantity']--;
+                                            _saveCartItems();
+                                          });
+                                        }
+                                      : null,
                                   child: Center(
                                     child: Text(
                                       "-",
@@ -224,21 +228,6 @@ class _AddToCartState extends State<AddToCart> {
                                     ),
                                   ),
                                 ),
-                                //  FloatingActionButton(
-                                //   shape: const CircleBorder(),
-                                //   onPressed: () {
-                                //     setState(() {
-                                //       cartItems[index]['quantity']--;
-                                //       _saveCartItems();
-                                //     });
-                                //   },
-                                //   child: Center(
-                                //     child: Icon(
-                                //       Icons.minimize,
-                                //       size: 20,
-                                //     ),
-                                //   ),
-                                // ),
                               ),
                               SizedBox(
                                 width: 10,
@@ -280,24 +269,9 @@ class _AddToCartState extends State<AddToCart> {
                                     ),
                                   ),
                                 ),
-                                //  FloatingActionButton(
-                                //   shape: const CircleBorder(),
-                                //   onPressed: () {
-                                //     setState(() {
-                                //       cartItems[index]['quantity']--;
-                                //       _saveCartItems();
-                                //     });
-                                //   },
-                                //   child: Center(
-                                //     child: Icon(
-                                //       Icons.minimize,
-                                //       size: 20,
-                                //     ),
-                                //   ),
-                                // ),
                               ),
                             ],
-                          ),
+                          )
                         ],
                       ),
                       trailing: IconButton(
