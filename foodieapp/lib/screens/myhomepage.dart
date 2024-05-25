@@ -675,6 +675,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                       ['subTitle'],
                                   rating: filteredData[firstIndex]['rating'],
                                   price: filteredData[firstIndex]['price'],
+                                  description: filteredData[firstIndex]
+                                      ['description'],
                                   onFavoriteSelected: _addToFavourites,
                                   onFavoriteRemoved: _removeFromFavourites,
                                   favourites: [],
@@ -691,6 +693,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                         ['subTitle'],
                                     rating: filteredData[secondIndex]['rating'],
                                     price: filteredData[secondIndex]['price'],
+                                    description: filteredData[secondIndex]
+                                        ['description'],
                                     onFavoriteSelected: _addToFavourites,
                                     onFavoriteRemoved: _removeFromFavourites,
                                     favourites: [],

@@ -8,6 +8,7 @@ class ProductInfoPage extends StatefulWidget {
   final double rating;
   final String subTitle;
   final String price;
+  final String description;
 
   const ProductInfoPage({
     required this.imagePath,
@@ -15,6 +16,7 @@ class ProductInfoPage extends StatefulWidget {
     required this.rating,
     required this.subTitle,
     required this.price,
+    required this.description,
   });
 
   @override
@@ -125,7 +127,8 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
             child: Container(
               width: 340,
               child: Text(
-                'Enjoy our delicious ${widget.title}, made with a savory blend of fresh vegetables and herbs, topped with crisp lettuce, juicy tomatoes.',
+                // 'Enjoy our delicious ${widget.title}, made with a savory blend of fresh vegetables and herbs, topped with crisp lettuce, juicy tomatoes.',
+                widget.description,
                 style: TextStyle(
                   fontFamily: 'Roboto',
                   fontSize: 16,
@@ -365,14 +368,19 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
               child: Center(
                 child: TextButton(
                   onPressed: () async {
-                    SharedPreferences prefs = await SharedPreferences.getInstance();
-                    List<String>? cartItems = prefs.getStringList('cart_items') ?? [];
-                    String itemInfo = '${widget.title}#${widget.price}#${widget.imagePath}#$count';
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    List<String>? cartItems =
+                        prefs.getStringList('cart_items') ?? [];
+                    String itemInfo =
+                        '${widget.title}#${widget.price}#${widget.imagePath}#$count';
 
-                    int existingIndex = cartItems.indexWhere((item) => item.split('#')[0] == widget.title);
+                    int existingIndex = cartItems.indexWhere(
+                        (item) => item.split('#')[0] == widget.title);
 
                     if (existingIndex != -1) {
-                      List<String> existingItemParts = cartItems[existingIndex].split('#');
+                      List<String> existingItemParts =
+                          cartItems[existingIndex].split('#');
                       int existingCount = int.parse(existingItemParts[3]);
                       existingItemParts[3] = (existingCount + count).toString();
                       cartItems[existingIndex] = existingItemParts.join('#');

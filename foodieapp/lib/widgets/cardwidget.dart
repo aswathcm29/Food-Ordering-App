@@ -7,6 +7,7 @@ class CardWidget extends StatefulWidget {
   final double rating;
   final String subTitle;
   final String price;
+  final String description;
   final Function onFavoriteSelected;
   final Function onFavoriteRemoved;
   final List<Map<String, dynamic>> favourites;
@@ -17,6 +18,7 @@ class CardWidget extends StatefulWidget {
     required this.rating,
     required this.subTitle,
     required this.price,
+    required this.description,
     required this.onFavoriteSelected,
     required this.onFavoriteRemoved,
     required this.favourites,
@@ -39,6 +41,7 @@ class _CardWidgetState extends State<CardWidget> {
         item['rating'] == widget.rating &&
         item['subTitle'] == widget.subTitle &&
         item['price'] == widget.price);
+        
   }
 
   @override
@@ -54,6 +57,7 @@ class _CardWidgetState extends State<CardWidget> {
               rating: widget.rating,
               subTitle: widget.subTitle,
               price: widget.price,
+              description: widget.description,
             ),
           ),
         );
@@ -62,7 +66,7 @@ class _CardWidgetState extends State<CardWidget> {
         width: 150,
         height: 300,
         padding: EdgeInsets.only(right: 6, bottom: 10),
-        margin: EdgeInsets.only(right: 6,left: 2),
+        margin: EdgeInsets.only(right: 6, left: 2),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           color: Colors.white,
@@ -163,10 +167,10 @@ class _CardWidgetState extends State<CardWidget> {
                           widget.rating,
                           widget.subTitle,
                           widget.price,
+
                         );
                       }
-                       if(!isFavorite) {
-                       
+                      if (!isFavorite) {
                         widget.onFavoriteRemoved(
                           widget.imagePath,
                           widget.title,

@@ -121,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
   // }
   Future<void> _signInWithGoogle() async {
     try {
-      await GoogleSignIn().signOut();
+      // await GoogleSignIn().signOut();
 
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       final prefs = await SharedPreferences.getInstance();
