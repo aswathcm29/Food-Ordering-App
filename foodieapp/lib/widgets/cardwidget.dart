@@ -22,6 +22,7 @@ class CardWidget extends StatefulWidget {
     required this.onFavoriteSelected,
     required this.onFavoriteRemoved,
     required this.favourites,
+
   });
 
   @override
@@ -34,14 +35,20 @@ class _CardWidgetState extends State<CardWidget> {
   @override
   void initState() {
     super.initState();
-    // Check if the current item is in the favorites list
-    isFavorite = widget.favourites.any((item) =>
-        item['imagePath'] == widget.imagePath &&
-        item['title'] == widget.title &&
-        item['rating'] == widget.rating &&
-        item['subTitle'] == widget.subTitle &&
-        item['price'] == widget.price);
-        
+
+    updateFavoriteState();
+  }
+
+  void updateFavoriteState() {
+    print("State Updated");
+    setState(() {
+      isFavorite = widget.favourites.any((item) =>
+          item['imagePath'] == widget.imagePath &&
+          item['title'] == widget.title &&
+          item['rating'] == widget.rating &&
+          item['subTitle'] == widget.subTitle &&
+          item['price'] == widget.price);
+    });
   }
 
   @override
@@ -160,24 +167,18 @@ class _CardWidgetState extends State<CardWidget> {
                   onPressed: () {
                     setState(() {
                       isFavorite = !isFavorite;
+                      // print(isFavorite);
+                      final item = {
+                        'imagePath': widget.imagePath,
+                        'title': widget.title,
+                        'rating': widget.rating,
+                        'subTitle': widget.subTitle,
+                        'price': widget.price,
+                      };
                       if (isFavorite) {
-                        widget.onFavoriteSelected(
-                          widget.imagePath,
-                          widget.title,
-                          widget.rating,
-                          widget.subTitle,
-                          widget.price,
-
-                        );
-                      }
-                      if (!isFavorite) {
-                        widget.onFavoriteRemoved(
-                          widget.imagePath,
-                          widget.title,
-                          widget.rating,
-                          widget.subTitle,
-                          widget.price,
-                        );
+                        widget.onFavoriteSelected(item);
+                      } else {
+                        widget.onFavoriteRemoved(item);
                       }
                     });
                   },

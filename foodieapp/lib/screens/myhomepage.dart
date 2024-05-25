@@ -22,6 +22,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   final List<Map<String, dynamic>> _favourites = [];
   bool _isListening = false;
+  bool _isFavourite = false;
 
   // final List<Map<String, dynamic>> cardData2 = [
   //   {
@@ -164,18 +165,30 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void _addToFavourites(String imagePath, String title, double rating,
-      String subTitle, String price) {
+  void _addToFavourites(Map<String, dynamic> item) {
     setState(() {
       _favourites.add({
-        'imagePath': imagePath,
-        'title': title,
-        'rating': rating,
-        'subTitle': subTitle,
-        'price': price,
+        'imagePath': item['imagePath'],
+        'title': item['title'],
+        'rating': item['rating'],
+        'subTitle': item['subTitle'],
+        'price': item['price'],
       });
     });
   }
+
+  // void _addToFavourites(String imagePath, String title, double rating,
+  //     String subTitle, String price) {
+  //   setState(() {
+  //     _favourites.add({
+  //       'imagePath': imagePath,
+  //       'title': title,
+  //       'rating': rating,
+  //       'subTitle': subTitle,
+  //       'price': price,
+  //     });
+  //   });
+  // }
 
   final TextEditingController _searchController = TextEditingController();
   bool _isLoggedIn = false;
@@ -188,6 +201,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    initSpeech();
     _loadUserProfile();
     _fetchProductDataFromFirestore();
     // sendDataToFirestore(cardData2);
@@ -336,9 +350,22 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _removeFromFavourites(Map<String, dynamic> item) {
     setState(() {
-      _favourites.remove(item);
+      _favourites.removeWhere((fav) =>
+          fav['imagePath'] == item['imagePath'] &&
+          fav['title'] == item['title'] &&
+          fav['rating'] == item['rating'] &&
+          fav['subTitle'] == item['subTitle'] &&
+          fav['price'] == item['price']);
     });
   }
+
+  // void _removeFromFavourites(Map<String, dynamic> item) {
+  //   setState(() {
+  //     // _favourites.remove(item);
+  //     _favourites.remove(item);
+  //     print(_favourites);
+  //   });
+  // }
 
   Future<void> _showUserMenu(BuildContext context) async {
     String? result = await showMenu(
@@ -373,7 +400,12 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void initSpeech() async {
-    setState(() {});
+    bool available = await _speechToText.initialize();
+    if (available) {
+      setState(() {});
+    } else {
+      print('Speech recognition not available');
+    }
   }
 
   void _startListening() async {
@@ -417,68 +449,23 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       String _spokenWords = result.recognizedWords.toLowerCase();
       print(_spokenWords);
+
       if (_spokenWords.contains('pizza')) {
-        // _searchController.text = "pizza";
-        // _searchController.text = _searchController.text.trim();
-
-        // print(_spokenWords);
-        // _searchController.text = "";
         filterData("pizza");
-      }
-      if (_spokenWords.contains('burger')) {
-        // _searchController.text = "burger";
-        // _searchController.text = _searchController.text.trim();
-
-        // print(_spokenWords);
-        // _searchController.text = "";
+      } else if (_spokenWords.contains('burger')) {
         filterData("burger");
-      }
-      if (_spokenWords.contains('price')) {
-        // _searchController.text = "burger";
-        // _searchController.text = _searchController.text.trim();
-
-        // print(_spokenWords);
-        // _searchController.text = "";
-        filterData("fries");
-      }
-      if (_spokenWords.contains('shawarma')) {
-        // _searchController.text = "burger";
-        // _searchController.text = _searchController.text.trim();
-
-        // print(_spokenWords);
-        // _searchController.text = "";
+      } else if (_spokenWords.contains('price')) {
+        filterData("price");
+      } else if (_spokenWords.contains('shawarma')) {
         filterData("shawarma");
-      }
-      if (_spokenWords.contains('pasta')) {
-        // _searchController.text = "burger";
-        // _searchController.text = _searchController.text.trim();
-
-        // print(_spokenWords);
-        // _searchController.text = "";
+      } else if (_spokenWords.contains('pasta')) {
         filterData("pasta");
-      }
-      if (_spokenWords.contains('sandwich')) {
-        // _searchController.text = "burger";
-        // _searchController.text = _searchController.text.trim();
-
-        // print(_spokenWords);
-        // _searchController.text = "";
+      } else if (_spokenWords.contains('sandwich')) {
         filterData("sandwich");
-      }
-      if (_spokenWords.contains('all')) {
-        // _searchController.text = "burger";
-        // _searchController.text = _searchController.text.trim();
-
-        // print(_spokenWords);
-        // _searchController.text = "";
+      } else if (_spokenWords.contains('all')) {
         filterData("all");
       } else {
         filterData("");
-        _searchController.text = "";
-        _searchController.text = _searchController.text.trim();
-        setState(() {
-          filteredData = []; // Assign an empty list to filteredData
-        });
       }
     });
   }

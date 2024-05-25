@@ -173,6 +173,7 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
                   setState(() {
                     _sliderValue = newValue;
                   });
+                  print(_sliderValue);
                 },
                 min: 0,
                 max: 1,
