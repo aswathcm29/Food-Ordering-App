@@ -1,7 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
-//import 'dart:js_util';
-
 import 'package:flutter/material.dart';
 import 'package:foodieapp/screens/addtocart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,6 +8,7 @@ class ProductInfoPage extends StatefulWidget {
   final double rating;
   final String subTitle;
   final String price;
+
   const ProductInfoPage({
     required this.imagePath,
     required this.title,
@@ -26,7 +23,6 @@ class ProductInfoPage extends StatefulWidget {
 
 class _ProductInfoPageState extends State<ProductInfoPage> {
   double _sliderValue = 0.5;
-
   int count = 1;
 
   void increment() {
@@ -36,9 +32,11 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
   }
 
   void decrement() {
-    setState(() {
-      count--;
-    });
+    if (count > 1) {
+      setState(() {
+        count--;
+      });
+    }
   }
 
   @override
@@ -63,7 +61,7 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
             top: 400,
             left: 19,
             child: Text(
-              widget.title ,
+              widget.title,
               style: TextStyle(
                 fontFamily: 'Roboto',
                 fontSize: 25,
@@ -86,7 +84,6 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
               },
             ),
           ),
-         
           Positioned(
             top: 440,
             left: 19,
@@ -122,7 +119,6 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
               ),
             ),
           ),
-          
           Positioned(
             top: 470,
             left: 19,
@@ -223,7 +219,7 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
               width: 60,
               height: 19,
               child: Text(
-                'Portion',
+                'Quantity',
                 style: TextStyle(
                   fontFamily: 'Roboto',
                   fontSize: 14,
@@ -240,7 +236,7 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: Color(0xFF19C08E),
+                color: count > 1 ? Color(0xFF19C08E) : Colors.red,
                 borderRadius: BorderRadius.circular(10),
                 boxShadow: [
                   BoxShadow(
@@ -252,7 +248,7 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
                 ],
               ),
               child: InkWell(
-                onTap: decrement,
+                onTap: count > 1 ? decrement : null,
                 child: Center(
                   child: Text(
                     "-",
@@ -325,12 +321,7 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
               height: 60,
               decoration: BoxDecoration(
                 color: Color(0xFF19C08E),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  bottomLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                  bottomRight: Radius.circular(20),
-                ),
+                borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
                     color: Color(0xFF000000).withOpacity(0.4),
@@ -361,12 +352,7 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
               height: 60,
               decoration: BoxDecoration(
                 color: Color(0xFF3C2F2F),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  bottomLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                  bottomRight: Radius.circular(20),
-                ),
+                borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
                     color: Color(0xFF000000).withOpacity(0.4),
@@ -379,15 +365,21 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
               child: Center(
                 child: TextButton(
                   onPressed: () async {
-                    // Implement add to cart functionality here
-                    // Store item information in local storage
-                    SharedPreferences prefs =
-                        await SharedPreferences.getInstance();
-                    List<String>? cartItems =
-                        prefs.getStringList('cart_items') ?? [];
-                    String itemInfo =
-                        '${widget.title}#${widget.price}#${widget.imagePath}#1';
-                    cartItems.add(itemInfo);
+                    SharedPreferences prefs = await SharedPreferences.getInstance();
+                    List<String>? cartItems = prefs.getStringList('cart_items') ?? [];
+                    String itemInfo = '${widget.title}#${widget.price}#${widget.imagePath}#$count';
+
+                    int existingIndex = cartItems.indexWhere((item) => item.split('#')[0] == widget.title);
+
+                    if (existingIndex != -1) {
+                      List<String> existingItemParts = cartItems[existingIndex].split('#');
+                      int existingCount = int.parse(existingItemParts[3]);
+                      existingItemParts[3] = (existingCount + count).toString();
+                      cartItems[existingIndex] = existingItemParts.join('#');
+                    } else {
+                      cartItems.add(itemInfo);
+                    }
+
                     await prefs.setStringList('cart_items', cartItems);
                     Navigator.push(
                       context,
@@ -400,8 +392,7 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
                       fontFamily: 'Inter',
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: const Color.fromARGB(
-                          255, 238, 204, 204), // Changed color to white
+                      color: const Color.fromARGB(255, 238, 204, 204),
                     ),
                   ),
                 ),

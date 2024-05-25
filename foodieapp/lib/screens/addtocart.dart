@@ -39,12 +39,11 @@ class _AddToCartState extends State<AddToCart> {
       if (items != null) {
         cartItems = items.map((item) {
           var parts = item.split('#');
-
           return {
             'name': parts[0],
-            'imageUrl': parts[2], // Added imageUrl
             'price': double.parse(parts[1]),
-            'quantity': 1, // Initial quantity is 1
+            'imageUrl': parts[2],
+            'quantity': int.parse(parts[3]), // Adjust quantity based on stored value
           };
         }).toList();
       } else {
@@ -90,9 +89,7 @@ class _AddToCartState extends State<AddToCart> {
               'Login First',
               style: TextStyle(fontSize: 20),
             ),
-            SizedBox(
-              height: 10,
-            ),
+            SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -114,9 +111,7 @@ class _AddToCartState extends State<AddToCart> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              SignUpScreen()), // Assuming you have a SignUpScreen
+                      MaterialPageRoute(builder: (context) => SignUpScreen()),
                     );
                   },
                   child: const Text('Sign Up'),
@@ -229,13 +224,9 @@ class _AddToCartState extends State<AddToCart> {
                                   ),
                                 ),
                               ),
-                              SizedBox(
-                                width: 10,
-                              ),
+                              SizedBox(width: 10),
                               Text('${cartItems[index]['quantity']}'),
-                              SizedBox(
-                                width: 10,
-                              ),
+                              SizedBox(width: 10),
                               Container(
                                 decoration: BoxDecoration(
                                   color: Color(0xFF19C08E),
@@ -393,7 +384,7 @@ class _AddToCartState extends State<AddToCart> {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Text('Back to Shoping'),
+                  child: Text('Back to Shopping'),
                 ),
               ),
             ),
