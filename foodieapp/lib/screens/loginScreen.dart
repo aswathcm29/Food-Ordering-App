@@ -1,5 +1,9 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:foodieapp/screens/userinfo.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 import 'package:foodieapp/screens/myhomepage.dart';
@@ -20,6 +24,8 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _storeUid(String uid) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('uid', uid);
+    await prefs.setString('thirdpartyauth', 'false');
+    await prefs.setString('userphoto', '');
   }
 
   void _showErrorToast(String message) {
@@ -80,12 +86,46 @@ class _LoginScreenState extends State<LoginScreen> {
       // }
       print(e);
     }
-
   }
 
+  // Future<void> _signInWithGoogle() async {
+  //   try {
+  //     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+  //     if (googleUser == null) {
+  //       // The user canceled the sign-in
+  //       return;
+  //     }
+
+  //     final GoogleSignInAuthentication googleAuth =
+  //         await googleUser.authentication;
+
+  //     final AuthCredential credential = GoogleAuthProvider.credential(
+  //       accessToken: googleAuth.accessToken,
+  //       idToken: googleAuth.idToken,
+  //     );
+
+  //     final UserCredential userCredential =
+  //         await FirebaseAuth.instance.signInWithCredential(credential);
+
+  //     if (userCredential.user != null) {
+  //       // Store UID
+  //       await _storeUid(userCredential.user!.uid);
+
+  //       Navigator.push(
+  //           context, MaterialPageRoute(builder: (context) => MyHomePage()));
+  //     }
+  //   } catch (e) {
+  //     print(e);
+  //     _showErrorToast('Google sign-in failed. Please try again.');
+  //   }
+  // }
   Future<void> _signInWithGoogle() async {
     try {
+      await GoogleSignIn().signOut();
+
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      final prefs = await SharedPreferences.getInstance();
+
       if (googleUser == null) {
         // The user canceled the sign-in
         return;
@@ -106,11 +146,40 @@ class _LoginScreenState extends State<LoginScreen> {
         // Store UID
         await _storeUid(userCredential.user!.uid);
 
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => MyHomePage()));
+        // Print user information
+        print('User logged in with Google:');
+        print('UID: ${userCredential.user!.uid}');
+        print('Name: ${userCredential.user!.displayName}');
+        print('Email: ${userCredential.user!.email}');
+        print('Photo URL: ${userCredential.user!.photoURL}');
+        // await prefs.setString('uid', userCredential.user!.uid);
+        await prefs.setString('thirdpartyauth', 'true');
+        await prefs.setString('userphoto', '${userCredential.user!.photoURL}');
+
+        // Check if user exists in Firestore
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('UserData')
+            .doc(userCredential.user!.uid)
+            .get();
+        print(userDoc);
+
+        if (userDoc.exists) {
+          // Navigate to homepage if user exists
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => MyHomePage()));
+        } else {
+          // Navigate to user info page if user does not exist
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => userinfo(
+                    email: userCredential.user!.email!,
+                    uid: userCredential.user!.uid)),
+          );
+        }
       }
     } catch (e) {
-      print(e);
+      print('Error signing in with Google: $e');
       _showErrorToast('Google sign-in failed. Please try again.');
     }
   }

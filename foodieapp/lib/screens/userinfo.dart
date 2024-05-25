@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
 import 'package:motion_toast/motion_toast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class userinfo extends StatefulWidget {
   final String email;
@@ -33,6 +34,12 @@ class _userinfoState extends State<userinfo> {
 
   XFile? _pickedFile;
   File? _imageFile;
+  String? _imageUrl;
+  @override
+  void initState() {
+    super.initState();
+    // _loadImageFromPrefs();
+  }
 
   Future<void> _pickImage() async {
     final ImagePicker _picker = ImagePicker();
@@ -77,6 +84,16 @@ class _userinfoState extends State<userinfo> {
     ).show(context);
   }
 
+  // Future<void> _loadImageFromPrefs() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   String? imageUrl = prefs.getString('userphoto');
+  //   if (imageUrl != null) {
+  //     setState(() {
+  //       _imageUrl = imageUrl;
+  //     });
+  //   }
+  // }
+
   Future<String> _uploadImage(XFile image) async {
     try {
       String fileName = '${widget.uid}.png';
@@ -108,6 +125,9 @@ class _userinfoState extends State<userinfo> {
         if (_pickedFile != null) {
           imageUrl = await _uploadImage(_pickedFile!);
         }
+        // if (_imageUrl != null) {
+        //   imageUrl = _imageUrl;
+        // }
 
         await firestore.collection('UserData').doc(widget.uid).set({
           'email': widget.email,
@@ -195,7 +215,7 @@ class _userinfoState extends State<userinfo> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Image.asset(
-                        'assets/images/star.png',
+                        'assets/images/Star.png',
                         height: 45,
                         width: 45,
                       ),
@@ -256,6 +276,7 @@ class _userinfoState extends State<userinfo> {
                 validator: _validateUsername,
               ),
               SizedBox(height: 20),
+
               ElevatedButton(
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all(Colors.black),
@@ -267,6 +288,21 @@ class _userinfoState extends State<userinfo> {
                 onPressed: _pickImage,
                 child: Text('Select Profile Image'),
               ),
+
+              // if (_imageUrl != null) ...[
+              //   _imageUrl!.isNotEmpty
+              //       ? kIsWeb
+              //           ? Image.network(
+              //               _imageUrl!,
+              //               height: 200,
+              //             )
+              //           : Image.network(
+              //               _imageUrl!,
+              //               height: 200,
+              //             )
+              //       : Container(),
+              // ],
+
               _pickedFile != null
                   ? kIsWeb
                       ? Image.network(
@@ -278,6 +314,7 @@ class _userinfoState extends State<userinfo> {
                           height: 200,
                         )
                   : Container(),
+
               SizedBox(height: 20),
               Container(
                 width: double.infinity,
