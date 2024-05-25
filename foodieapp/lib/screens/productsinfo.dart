@@ -219,7 +219,7 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
             top: 600,
             left: 240,
             child: Container(
-              width: 60,
+              width: 70,
               height: 19,
               child: Text(
                 'Quantity',
