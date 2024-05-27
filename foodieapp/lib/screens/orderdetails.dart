@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,6 +29,9 @@ class _OrderDetailsState extends State<OrderDetails> {
             .where('Order By', isEqualTo: userId)
             .snapshots();
       });
+    } else {
+      print('User ID not found');
+      
     }
   }
 
@@ -50,7 +55,7 @@ class _OrderDetailsState extends State<OrderDetails> {
         title: Text('Order Details'),
       ),
       body: _ordersStream == null
-          ? Center(child: CircularProgressIndicator())
+          ? Center(child: Center(child: Text('No orders available')))
           : StreamBuilder<QuerySnapshot>(
               stream: _ordersStream!,
               builder: (context, snapshot) {
@@ -99,7 +104,8 @@ class _OrderDetailsState extends State<OrderDetails> {
                               subtitle: Text(
                                 'Order Status: ${orderData['status'] ?? 'Unknown'}',
                                 style: TextStyle(
-                                  color: _getStatusColor(orderData['status'] ?? 'Unknown'),
+                                  color: _getStatusColor(
+                                      orderData['status'] ?? 'Unknown'),
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -123,14 +129,21 @@ class _OrderDetailsState extends State<OrderDetails> {
                               ),
                             ),
                             Column(
-                              children: (orderData['products'] as List<dynamic>? ?? []).map<Widget>((product) {
-                                List<String> productDetails = product.split('#');
+                              children:
+                                  (orderData['products'] as List<dynamic>? ??
+                                          [])
+                                      .map<Widget>((product) {
+                                List<String> productDetails =
+                                    product.split('#');
                                 String name = productDetails[0];
-                                int quantity = int.tryParse(productDetails[3]) ?? 1;
+                                int quantity =
+                                    int.tryParse(productDetails[3]) ?? 1;
                                 return Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 4),
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
                                         name,

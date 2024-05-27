@@ -34,7 +34,6 @@ class _userinfoState extends State<userinfo> {
 
   XFile? _pickedFile;
   File? _imageFile;
-  String? _imageUrl;
   @override
   void initState() {
     super.initState();
@@ -122,13 +121,14 @@ class _userinfoState extends State<userinfo> {
 
       try {
         String? imageUrl;
-        if (_pickedFile != null) {
-          imageUrl = await _uploadImage(_pickedFile!);
+        if (_pickedFile == null) {
+          _showErrorToast('Please select a profile image');
+          return;
         }
         // if (_imageUrl != null) {
         //   imageUrl = _imageUrl;
         // }
-
+        imageUrl = await _uploadImage(_pickedFile!);
         await firestore.collection('UserData').doc(widget.uid).set({
           'email': widget.email,
           'fullName': fullName,

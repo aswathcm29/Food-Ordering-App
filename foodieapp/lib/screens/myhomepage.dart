@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:foodieapp/screens/favouritepage.dart';
@@ -20,7 +22,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
-  final List<Map<String, dynamic>> _favourites = [];
+  List<Map<String, dynamic>> _favourites = [];
   bool _isListening = false;
   bool _isFavourite = false;
 
@@ -137,7 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
   //   print('Data sent to Firestore successfully!');
   // }
 
-  void _onItemTapped(int index) {
+  void _onItemTapped(int index) async {
     setState(() {
       _selectedIndex = index;
     });
@@ -154,15 +156,45 @@ class _MyHomePageState extends State<MyHomePage> {
       );
     }
     if (_selectedIndex == 3) {
-      Navigator.push(
+      final updatedFavourites = await Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => FavouritePage(
-                  favourites: _favourites,
-                  onFavoriteRemoved: _removeFromFavourites,
-                )),
+          builder: (context) => FavouritePage(
+            onFavoritesUpdated: _onFavoritesUpdated,
+          ),
+        ),
       );
+
+      if (updatedFavourites != null) {
+        setState(() {
+          _favourites = updatedFavourites;
+        });
+      }
     }
+  }
+
+  void _loadFavourites() async {
+    final prefs = await SharedPreferences.getInstance();
+    final favouriteList = prefs.getStringList('favItems') ?? [];
+    setState(() {
+      _favourites = favouriteList
+          .map((item) => jsonDecode(item))
+          .toList()
+          .cast<Map<String, dynamic>>();
+    });
+  }
+
+  void _onFavoritesUpdated(List<Map<String, dynamic>> updatedFavourites) {
+    setState(() {
+      _favourites = updatedFavourites;
+      _saveFavourites();
+    });
+  }
+
+  void _saveFavourites() async {
+    final prefs = await SharedPreferences.getInstance();
+    final favouriteList = _favourites.map((item) => jsonEncode(item)).toList();
+    prefs.setStringList('favItems', favouriteList);
   }
 
   void _addToFavourites(Map<String, dynamic> item) {
@@ -204,6 +236,7 @@ class _MyHomePageState extends State<MyHomePage> {
     initSpeech();
     _loadUserProfile();
     _fetchProductDataFromFirestore();
+    _loadFavourites();
     // sendDataToFirestore(cardData2);
   }
 

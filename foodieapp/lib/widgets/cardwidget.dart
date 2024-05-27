@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert'; // for json encode and decode
 import 'package:foodieapp/screens/productsinfo.dart';
 
 class CardWidget extends StatefulWidget {
@@ -8,8 +10,8 @@ class CardWidget extends StatefulWidget {
   final String subTitle;
   final String price;
   final String description;
-  final Function onFavoriteSelected;
-  final Function onFavoriteRemoved;
+  final Function(Map<String, dynamic>) onFavoriteSelected;
+  final Function(Map<String, dynamic>) onFavoriteRemoved;
   final List<Map<String, dynamic>> favourites;
 
   const CardWidget({
@@ -22,7 +24,6 @@ class CardWidget extends StatefulWidget {
     required this.onFavoriteSelected,
     required this.onFavoriteRemoved,
     required this.favourites,
-
   });
 
   @override
@@ -31,24 +32,61 @@ class CardWidget extends StatefulWidget {
 
 class _CardWidgetState extends State<CardWidget> {
   bool isFavorite = false;
+  late SharedPreferences prefs;
 
   @override
   void initState() {
     super.initState();
+    initPrefs();
+  }
 
+  void initPrefs() async {
+    prefs = await SharedPreferences.getInstance();
     updateFavoriteState();
   }
 
   void updateFavoriteState() {
-    print("State Updated");
+    final favorites = prefs.getStringList('favItems') ?? [];
     setState(() {
-      isFavorite = widget.favourites.any((item) =>
-          item['imagePath'] == widget.imagePath &&
-          item['title'] == widget.title &&
-          item['rating'] == widget.rating &&
-          item['subTitle'] == widget.subTitle &&
-          item['price'] == widget.price);
+      isFavorite = favorites.contains(jsonEncode(_itemData()));
     });
+  }
+
+  Map<String, dynamic> _itemData() {
+    return {
+      'imagePath': widget.imagePath,
+      'title': widget.title,
+      'rating': widget.rating,
+      'subTitle': widget.subTitle,
+      'price': widget.price,
+      'description': widget.description,
+    };
+  }
+
+  void toggleFavorite() async {
+    final item = _itemData();
+    final favorites = prefs.getStringList('favItems') ?? [];
+
+    setState(() {
+      if (isFavorite) {
+        favorites.remove(jsonEncode(item));
+        widget.onFavoriteRemoved(item);
+      } else {
+        favorites.add(jsonEncode(item));
+        widget.onFavoriteSelected(item);
+      }
+      isFavorite = !isFavorite;
+    });
+
+    await prefs.setStringList('favItems', favorites);
+  }
+
+  @override
+  void didUpdateWidget(CardWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.favourites != widget.favourites) {
+      updateFavoriteState();
+    }
   }
 
   @override
@@ -164,24 +202,7 @@ class _CardWidgetState extends State<CardWidget> {
                     color: isFavorite ? Colors.red : Color(0xFF3C2F2F),
                     size: 24,
                   ),
-                  onPressed: () {
-                    setState(() {
-                      isFavorite = !isFavorite;
-                      // print(isFavorite);
-                      final item = {
-                        'imagePath': widget.imagePath,
-                        'title': widget.title,
-                        'rating': widget.rating,
-                        'subTitle': widget.subTitle,
-                        'price': widget.price,
-                      };
-                      if (isFavorite) {
-                        widget.onFavoriteSelected(item);
-                      } else {
-                        widget.onFavoriteRemoved(item);
-                      }
-                    });
-                  },
+                  onPressed: toggleFavorite,
                 ),
               ],
             ),

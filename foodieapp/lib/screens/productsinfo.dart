@@ -337,7 +337,7 @@ class _ProductInfoPageState extends State<ProductInfoPage> {
               ),
               child: Center(
                 child: Text(
-                  widget.price,
+                  '\$${widget.price}',
                   style: TextStyle(
                     fontFamily: 'Roboto',
                     fontSize: 22,
