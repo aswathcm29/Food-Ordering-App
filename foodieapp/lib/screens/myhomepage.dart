@@ -455,7 +455,7 @@ class _MyHomePageState extends State<MyHomePage> {
       } else if (_spokenWords.contains('burger')) {
         filterData("burger");
       } else if (_spokenWords.contains('price')) {
-        filterData("price");
+        filterData("fries");
       } else if (_spokenWords.contains('shawarma')) {
         filterData("shawarma");
       } else if (_spokenWords.contains('pasta')) {
@@ -465,7 +465,9 @@ class _MyHomePageState extends State<MyHomePage> {
       } else if (_spokenWords.contains('all')) {
         filterData("all");
       } else {
-        filterData("");
+        setState(() {
+          filteredData == [];
+        });
       }
     });
   }
