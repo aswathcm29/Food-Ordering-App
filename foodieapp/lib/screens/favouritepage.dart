@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:motion_toast/motion_toast.dart';
 
 class FavouritePage extends StatefulWidget {
   final Function(List<Map<String, dynamic>>) onFavoritesUpdated;
@@ -33,16 +34,44 @@ class _FavouritePageState extends State<FavouritePage> {
     });
   }
 
-  void _removeFavourite(Map<String, dynamic> item) async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _currentFavourites.remove(item);
-    });
-    final favouriteList =
-        _currentFavourites.map((fav) => jsonEncode(fav)).toList();
-    await prefs.setStringList('favItems', favouriteList);
-    widget.onFavoritesUpdated(_currentFavourites);
-  }
+ void _removeFavourite(Map<String, dynamic> item) async {
+  final prefs = await SharedPreferences.getInstance();
+  setState(() {
+    _currentFavourites.remove(item);
+  });
+  final favouriteList =
+      _currentFavourites.map((fav) => jsonEncode(fav)).toList();
+  await prefs.setStringList('favItems', favouriteList);
+  widget.onFavoritesUpdated(_currentFavourites);
+
+  _showMotionToast(
+    "${item['title']} Removed",
+    "Item removed from favorites",
+    true, // Assuming success when item is removed
+  );
+}
+
+void _showMotionToast(String title, String description, bool isSuccess) {
+  IconData iconData = isSuccess ? Icons.favorite : Icons.favorite_border;
+
+  MotionToast(
+    title: Text(
+      title,
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
+      ),
+    ),
+    description: Text(
+      description,
+      style: TextStyle(color: Colors.white),
+    ),
+    icon: iconData,
+    primaryColor: isSuccess ? Colors.red : Colors.red,
+    backgroundType: BackgroundType.solid,
+    toastDuration: Duration(seconds: 2),
+  ).show(context);
+}
 
   @override
   Widget build(BuildContext context) {

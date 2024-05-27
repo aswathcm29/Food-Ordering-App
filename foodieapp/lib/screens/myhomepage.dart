@@ -366,7 +366,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         PopupMenuItem(
           child: ListTile(
-            leading: Icon(Icons.attach_money, color: Color(0xFF19C08E)),
+            leading: Icon(Icons.money, color: Color(0xFF19C08E)),
             title:
                 Text('Sort by Price', style: TextStyle(color: Colors.black87)),
             onTap: () {
@@ -377,7 +377,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ],
       color: Colors.white, // Background color of the popup menu
-      elevation: 8, // Shadow elevation of the popup menu
+      elevation: 8, 
     );
   }
 
@@ -500,6 +500,7 @@ class _MyHomePageState extends State<MyHomePage> {
       } else {
         setState(() {
           filteredData == [];
+          print("Item Not found");
         });
       }
     });

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert'; // for json encode and decode
 import 'package:foodieapp/screens/productsinfo.dart';
+import 'package:motion_toast/motion_toast.dart';
+import 'package:motion_toast/resources/arrays.dart';
 
 class CardWidget extends StatefulWidget {
   final String imagePath;
@@ -64,22 +66,47 @@ class _CardWidgetState extends State<CardWidget> {
   }
 
   void toggleFavorite() async {
-    final item = _itemData();
-    final favorites = prefs.getStringList('favItems') ?? [];
+  final item = _itemData();
+  final favorites = prefs.getStringList('favItems') ?? [];
 
-    setState(() {
-      if (isFavorite) {
-        favorites.remove(jsonEncode(item));
-        widget.onFavoriteRemoved(item);
-      } else {
-        favorites.add(jsonEncode(item));
-        widget.onFavoriteSelected(item);
-      }
-      isFavorite = !isFavorite;
-    });
+  setState(() {
+    if (isFavorite) {
+      favorites.remove(jsonEncode(item));
+      widget.onFavoriteRemoved(item);
+      _showMotionToast("Removed from Favorites", "${widget.title} has been removed from your favorites.", false);
+    } else {
+      favorites.add(jsonEncode(item));
+      widget.onFavoriteSelected(item);
+      _showMotionToast("Added to Favorites", "${widget.title} has been added to your favorites.", true);
+    }
+    isFavorite = !isFavorite;
+  });
 
-    await prefs.setStringList('favItems', favorites);
-  }
+  await prefs.setStringList('favItems', favorites);
+}
+
+void _showMotionToast(String title, String description, bool isSuccess) {
+  IconData iconData = isSuccess ? Icons.favorite : Icons.favorite_border;
+
+  MotionToast(
+    title: Text(
+      title,
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
+      ),
+    ),
+    description: Text(
+      description,
+      style: TextStyle(color: Colors.white),
+    ),
+    icon: iconData, // Use IconData here instead of Icon widget
+    primaryColor: isSuccess ? Colors.green : Colors.red,
+    backgroundType: BackgroundType.solid,
+    toastDuration: Duration(seconds: 2),
+  ).show(context);
+}
+
 
   @override
   void didUpdateWidget(CardWidget oldWidget) {
