@@ -9,7 +9,7 @@ import 'dart:typed_data';
 import 'package:flutter/services.dart' show rootBundle;
 
 final InvoiceInfo invoiceInfo = InvoiceInfo(
-  description: 'First Order Invoice',
+  description: 'Order Invoice',
   date: DateTime.now(),
   dueDate: DateTime.now().add(Duration(days: 7)),
 );
@@ -67,15 +67,13 @@ class InvoicePage extends StatefulWidget {
 
 class _InvoicePageState extends State<InvoicePage> {
   late Future<List<InvoiceItem>> futureItems;
-  
-   var invoiceNumber = 'INV-${DateTime.now().millisecondsSinceEpoch}';
 
+  var invoiceNumber = 'INV-${DateTime.now().millisecondsSinceEpoch}';
 
   @override
   void initState() {
     super.initState();
     futureItems = getCartItems();
-
   }
 
   @override
@@ -180,7 +178,6 @@ class _InvoicePageState extends State<InvoicePage> {
             Text('Invoice Date: ${Utils.formatDate(invoiceInfo.date)}'),
             Text('Due Date: ${Utils.formatDate(invoiceInfo.dueDate)}'),
             SizedBox(height: 10),
-            
           ],
         ),
       ),
@@ -291,7 +288,8 @@ class _InvoicePageState extends State<InvoicePage> {
                     children: [
                       Text(
                         'Customer Information',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       Icon(Icons.contact_mail, color: Colors.red),
                     ],
@@ -334,7 +332,10 @@ class _InvoicePageState extends State<InvoicePage> {
     return ElevatedButton.icon(
       onPressed: () async {
         final pdf = await generatePdf(customer, items);
-        await Printing.sharePdf(bytes: pdf, filename: 'invoice-${customer.name}');
+        await Printing.sharePdf(
+          bytes: pdf,
+          filename: 'invoice-${customer.name}.pdf',
+        );
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Downloading receipt...')),
         );
@@ -345,7 +346,6 @@ class _InvoicePageState extends State<InvoicePage> {
   }
 
   Future<Uint8List> generatePdf(
-
       Customer customer, List<InvoiceItem> items) async {
     final pdf = pw.Document();
 
@@ -404,8 +404,7 @@ class _InvoicePageState extends State<InvoicePage> {
                           ],
                         ),
                         pw.SizedBox(height: 10),
-                        pw.Text(
-                            'Invoice Number: $invoiceNumber,'),
+                        pw.Text('Invoice Number: $invoiceNumber,'),
                         pw.Text(
                             'Invoice Date: ${Utils.formatDate(invoiceInfo.date)}'),
                         pw.Text(
